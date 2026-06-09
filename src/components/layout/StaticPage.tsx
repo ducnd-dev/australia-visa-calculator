@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { PageIntro } from "@/components/layout/PageIntro";
 import { Button } from "@/components/ui/button";
+import { proseClassName } from "@/lib/ui/prose";
 
 export function StaticPage({
   title,
@@ -36,8 +37,8 @@ export function StaticPage({
           </PageIntro>
         </div>
       </div>
-      <div className="prose prose-neutral max-w-none prose-headings:scroll-mt-24 prose-headings:font-semibold prose-headings:tracking-tight prose-a:text-primary prose-a:no-underline hover:prose-a:underline prose-li:marker:text-primary/60">
-        {children}
+      <div className="rounded-2xl border border-border/60 bg-card/50 px-6 py-8 shadow-sm md:px-10 md:py-10">
+        <div className={proseClassName}>{children}</div>
       </div>
     </div>
   );

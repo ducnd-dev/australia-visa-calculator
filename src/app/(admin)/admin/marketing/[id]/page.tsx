@@ -7,6 +7,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { FlashMessage } from "@/components/ui/flash-message";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { cn } from "@/lib/utils";
+import { proseClassName } from "@/lib/ui/prose";
 import { sendPlatformCampaign } from "../actions";
 
 export default async function AdminCampaignDetailPage({
@@ -52,7 +54,7 @@ export default async function AdminCampaignDetailPage({
 
       <SectionCard title="Preview">
         <div
-          className="prose prose-sm max-w-none rounded-xl border border-border bg-muted/30 p-5"
+          className={cn(proseClassName, "prose-sm rounded-xl border border-border bg-muted/30 p-5")}
           dangerouslySetInnerHTML={{ __html: campaign.body_html }}
         />
       </SectionCard>

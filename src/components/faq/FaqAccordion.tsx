@@ -29,14 +29,18 @@ export function FaqAccordion({ items }: { items: FaqItem[] }) {
 
 export function FaqFooterLinks() {
   return (
-    <p className="not-prose mt-10 text-sm text-muted-foreground">
+    <p className="not-prose mt-10 text-sm leading-relaxed text-muted-foreground">
       More detail in our{" "}
       <Link href="/blog" className="font-medium text-primary hover:underline">
         guides
-      </Link>{" "}
-      or{" "}
+      </Link>
+      ,{" "}
       <Link href="/for-agents" className="font-medium text-primary hover:underline">
         agent overview
+      </Link>
+      , and{" "}
+      <Link href="/disclaimer" className="font-medium text-primary hover:underline">
+        disclaimer
       </Link>
       .
     </p>

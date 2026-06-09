@@ -3,6 +3,8 @@ import { Fragment } from "react";
 import { AdSlot } from "@/components/ads/AdSlot";
 import type { BlogSection } from "@/lib/blog/types";
 import { slugifyHeading } from "@/lib/blog/utils";
+import { cn } from "@/lib/utils";
+import { proseClassName } from "@/lib/ui/prose";
 
 function renderSection(section: BlogSection) {
   switch (section.type) {
@@ -60,7 +62,7 @@ export function BlogArticleBody({ sections }: { sections: BlogSection[] }) {
   const adAfter = Math.max(1, Math.floor(sections.length / 2));
 
   return (
-    <div className="prose prose-slate mt-8 max-w-none">
+    <div className={cn(proseClassName, "mt-8")}>
       {sections.map((section, i) => (
         <Fragment key={i}>
           {renderSection(section)}

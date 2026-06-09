@@ -9,6 +9,8 @@ import { FlashMessage } from "@/components/ui/flash-message";
 import { createClient } from "@/lib/supabase/server";
 import { getSessionProfile } from "@/lib/auth/session";
 import { sendAgencyCampaign } from "../../actions";
+import { cn } from "@/lib/utils";
+import { proseClassName } from "@/lib/ui/prose";
 
 function statusVariant(status: string) {
   if (status === "sent") return "success" as const;
@@ -77,7 +79,7 @@ export default async function CampaignDetailPage({
 
       <SectionCard title="Email preview">
         <div
-          className="prose prose-sm max-w-none rounded-xl border border-border bg-muted/30 p-5"
+          className={cn(proseClassName, "prose-sm rounded-xl border border-border bg-muted/30 p-5")}
           dangerouslySetInnerHTML={{ __html: campaign.body_html }}
         />
       </SectionCard>

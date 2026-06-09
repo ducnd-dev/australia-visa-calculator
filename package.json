@@ -13,7 +13,8 @@
     "db:check": "node scripts/check-supabase.mjs",
     "db:migrate": "node scripts/migrate-supabase.mjs",
     "db:build-apply-all": "node scripts/build-apply-all.mjs",
-    "blog:validate": "node scripts/validate-blog.mjs"
+    "blog:validate": "node scripts/validate-blog.mjs",
+    "content:validate": "node scripts/validate-content.mjs"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1057.0",
@@ -51,6 +52,7 @@
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
+    "@tailwindcss/typography": "^0.5.20",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
