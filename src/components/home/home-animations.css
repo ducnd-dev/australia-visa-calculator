@@ -1,0 +1,185 @@
+@keyframes home-float {
+  0%,
+  100% {
+    transform: translateY(0) rotateX(var(--rx)) rotateY(var(--ry)) rotateZ(var(--rz));
+  }
+  50% {
+    transform: translateY(-10px) rotateX(var(--rx)) rotateY(var(--ry)) rotateZ(var(--rz));
+  }
+}
+
+@keyframes home-glow-drift {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(4%, -6%) scale(1.08);
+  }
+}
+
+@keyframes home-score-pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 oklch(0.488 0.243 264.376 / 0.35);
+  }
+  50% {
+    transform: scale(1.03);
+    box-shadow: 0 0 40px 8px oklch(0.488 0.243 264.376 / 0.2);
+  }
+}
+
+@keyframes home-grid-scroll {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 0 48px;
+  }
+}
+
+@keyframes home-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.home-animate-float {
+  animation: home-float 6s ease-in-out infinite;
+  animation-delay: var(--delay, 0s);
+}
+
+.home-animate-glow {
+  animation: home-glow-drift 14s ease-in-out infinite;
+}
+
+.home-animate-score {
+  animation: home-score-pulse 3s ease-in-out infinite;
+}
+
+.home-animate-grid {
+  animation: home-grid-scroll 12s linear infinite;
+}
+
+@keyframes home-orbit-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes home-orbit-fast {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+.home-animate-orbit-slow {
+  animation: home-orbit-slow 24s linear infinite;
+}
+
+.home-animate-orbit-fast {
+  animation: home-orbit-fast 16s linear infinite;
+}
+
+@keyframes home-mesh-a {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(6%, 4%) scale(1.06);
+  }
+}
+
+@keyframes home-mesh-b {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(-5%, 6%) scale(1.05);
+  }
+}
+
+@keyframes home-mesh-c {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(4%, -5%) scale(1.04);
+  }
+}
+
+@keyframes home-beam-sweep {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -100% 0;
+  }
+}
+
+.home-animate-mesh-a {
+  animation: home-mesh-a 18s ease-in-out infinite;
+}
+
+.home-animate-mesh-b {
+  animation: home-mesh-b 22s ease-in-out infinite;
+  animation-delay: -4s;
+}
+
+.home-animate-mesh-c {
+  animation: home-mesh-c 20s ease-in-out infinite;
+  animation-delay: -8s;
+}
+
+.home-animate-beam {
+  animation: home-beam-sweep 14s ease-in-out infinite;
+}
+
+.home-reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 0.6s ease,
+    transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.home-reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .home-animate-float,
+  .home-animate-glow,
+  .home-animate-score,
+  .home-animate-grid,
+  .home-animate-orbit-slow,
+  .home-animate-orbit-fast,
+  .home-animate-mesh-a,
+  .home-animate-mesh-b,
+  .home-animate-mesh-c,
+  .home-animate-beam {
+    animation: none;
+  }
+
+  .home-reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}

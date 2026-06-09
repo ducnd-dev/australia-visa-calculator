@@ -1,0 +1,10 @@
+import type { CalculatorAnswers } from "./calculator-schema";
+export const EMPLOYMENT_POINTS_CAP = 20;
+export const AGE_POINTS: Record<CalculatorAnswers["ageBand"], number> = { "18-24": 25, "25-32": 30, "33-39": 25, "40-44": 15, "45+": 0 };
+export const ENGLISH_POINTS: Record<CalculatorAnswers["english"], number> = { competent: 0, proficient: 10, superior: 20 };
+export const OVERSEAS_EMPLOYMENT_POINTS: Record<CalculatorAnswers["overseasYears"], number> = { "0": 0, "3": 5, "5": 10, "8": 15 };
+export const AUSTRALIAN_EMPLOYMENT_POINTS: Record<CalculatorAnswers["australianYears"], number> = { "0": 0, "1": 5, "3": 10, "5": 15, "8": 20 };
+export const QUALIFICATION_POINTS: Record<CalculatorAnswers["qualification"], number> = { none: 0, diploma: 10, bachelor: 15, doctorate: 20 };
+export const PARTNER_POINTS: Record<CalculatorAnswers["partnerStatus"], number> = { single: 10, "partner-english": 5, "partner-skilled": 10 };
+export const NOMINATION_POINTS: Record<CalculatorAnswers["visaSubclass"], number> = { "189": 0, "190": 5, "491": 15 };
+export const BONUS_POINTS = { australianStudy: 5, regionalStudy: 5, specialistEducation: 10, naati: 5, professionalYear: 5 } as const;

@@ -1,0 +1,1 @@
+export default function AdminHome() { return <div className="p-8"><h1 className="text-2xl font-semibold">Platform admin</h1></div>; }
