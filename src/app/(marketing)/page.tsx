@@ -1,14 +1,18 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
+import { FaqAccordion } from "@/components/faq/FaqAccordion";
 import { HomeFeaturesGrid } from "@/components/home/HomeFeaturesGrid";
 import { HomeStatsStrip } from "@/components/home/HomeStatsStrip";
 import { VisaPathwaysStrip } from "@/components/home/VisaPathwaysStrip";
+import { ProductShowcase } from "@/components/marketing/ProductShowcase";
+import { TrustStrip } from "@/components/marketing/TrustStrip";
+import { PlanComparisonTable } from "@/components/marketing/PlanComparisonTable";
 import { AdBanner } from "@/components/ads/AdBanner";
 import { HomeHero } from "@/components/home/HomeHero";
 import { HomeReveal } from "@/components/home/HomeReveal";
 import { SectionHeading } from "@/components/layout/SectionHeading";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { JsonLd } from "@/components/seo/JsonLd";
 import { faqJsonLd, buildMetadata } from "@/lib/seo";
 import { LAST_UPDATED } from "@/lib/visa-rules/sources";
@@ -31,9 +35,29 @@ export default function HomePage() {
 
       <HomeStatsStrip />
 
+      <TrustStrip />
+
       <div className="mx-auto max-w-6xl px-4">
         <AdBanner slot="home-below-hero" />
       </div>
+
+      <ProductShowcase />
+
+      <section className="py-14 md:py-16">
+        <div className="mx-auto max-w-6xl px-4">
+          <HomeReveal>
+            <SectionHeading
+              eyebrow="Plans"
+              title="Trial vs Professional"
+              description="Start free in the practice workspace. Upgrade when you need PDF export and branding."
+              align="center"
+            />
+          </HomeReveal>
+          <HomeReveal delayMs={100} className="mt-10">
+            <PlanComparisonTable />
+          </HomeReveal>
+        </div>
+      </section>
 
       <HomeFeaturesGrid />
 
@@ -56,27 +80,9 @@ export default function HomePage() {
               align="center"
             />
           </HomeReveal>
-          <div className="mt-8 space-y-3">
-            {HOMEPAGE_FAQS.map((f, i) => (
-              <HomeReveal key={f.question} delayMs={i * 60}>
-                <Card className="overflow-hidden border-border/80 bg-card/90 shadow-sm backdrop-blur-sm transition-all hover:border-primary/30 hover:shadow-md">
-                  <details className="group">
-                    <summary className="cursor-pointer list-none px-5 py-4 font-medium marker:content-none [&::-webkit-details-marker]:hidden">
-                      <span className="flex items-center justify-between gap-3">
-                        {f.question}
-                        <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-sm text-primary transition-transform duration-300 group-open:rotate-180">
-                          ▼
-                        </span>
-                      </span>
-                    </summary>
-                    <CardContent className="border-t border-border/60 pb-5 text-muted-foreground leading-relaxed">
-                      {f.answer}
-                    </CardContent>
-                  </details>
-                </Card>
-              </HomeReveal>
-            ))}
-          </div>
+          <HomeReveal delayMs={80}>
+            <FaqAccordion items={HOMEPAGE_FAQS} />
+          </HomeReveal>
           <HomeReveal delayMs={200}>
             <p className="mt-8 text-center text-sm text-muted-foreground">
               <Link href="/faq" className="inline-flex items-center gap-1 font-medium text-primary hover:underline">
@@ -108,8 +114,7 @@ export default function HomePage() {
             {posts.map((p, i) => (
               <HomeReveal key={p.slug} delayMs={i * 100}>
                 <li>
-                  <Card className="group h-full overflow-hidden border-border/80 bg-card/90 transition-all duration-300 hover:-translate-y-1 hover:border-primary/25 hover:shadow-lg">
-                    <div className="h-1 bg-gradient-to-r from-primary via-blue-500 to-sky-400 opacity-0 transition-opacity group-hover:opacity-100" />
+                  <Card className="h-full border-border/80 bg-card shadow-sm">
                     <CardHeader>
                       <CardTitle className="text-base leading-snug">
                         <Link href={`/blog/${p.slug}`} className="hover:text-primary">

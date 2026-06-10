@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" fill="none">
+  <rect width="800" height="600" fill="#f1f5f9"/>
+  <rect x="120" y="48" width="560" height="504" rx="16" fill="#ffffff" stroke="#e2e8f0" stroke-width="2"/>
+  <rect x="152" y="80" width="48" height="48" rx="12" fill="#6366f1"/>
+  <text x="212" y="112" font-family="system-ui,sans-serif" font-size="16" font-weight="600" fill="#0f172a">Pacific Migration Practice</text>
+  <text x="212" y="132" font-family="system-ui,sans-serif" font-size="11" fill="#64748b">MARA 1234567</text>
+  <rect x="152" y="160" width="496" height="100" rx="12" fill="#eef2ff" stroke="#c7d2fe"/>
+  <text x="176" y="196" font-family="system-ui,sans-serif" font-size="13" fill="#64748b">Points estimate for Chen L.</text>
+  <text x="176" y="240" font-family="system-ui,sans-serif" font-size="40" font-weight="700" fill="#6366f1">78 pts</text>
+  <text x="280" y="232" font-family="system-ui,sans-serif" font-size="14" fill="#64748b">Subclass 189 skilled independent</text>
+  <rect x="152" y="284" width="496" height="160" rx="12" fill="#f8fafc" stroke="#e2e8f0"/>
+  <text x="176" y="316" font-family="system-ui,sans-serif" font-size="14" font-weight="600" fill="#0f172a">Breakdown summary</text>
+  <text x="176" y="348" font-family="system-ui,sans-serif" font-size="13" fill="#475569">Age · 30 pts</text>
+  <text x="176" y="372" font-family="system-ui,sans-serif" font-size="13" fill="#475569">English · 20 pts</text>
+  <text x="176" y="396" font-family="system-ui,sans-serif" font-size="13" fill="#475569">Skilled employment · 15 pts</text>
+  <rect x="152" y="468" width="150" height="40" rx="8" fill="#6366f1"/>
+  <text x="188" y="494" font-family="system-ui,sans-serif" font-size="13" font-weight="600" fill="#ffffff">Email report</text>
+  <rect x="318" y="468" width="150" height="40" rx="8" fill="#ffffff" stroke="#e2e8f0"/>
+  <text x="352" y="494" font-family="system-ui,sans-serif" font-size="13" font-weight="600" fill="#334155">Download PDF</text>
+  <text x="152" y="536" font-family="system-ui,sans-serif" font-size="11" fill="#94a3b8">Estimate only  not migration advice</text>
+</svg>

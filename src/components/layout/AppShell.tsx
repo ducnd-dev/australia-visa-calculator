@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { signOut } from "@/app/(app)/app/actions";
+import { Logo } from "@/components/brand/Logo";
 import { AppNav } from "@/components/layout/AppNav";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -41,11 +42,8 @@ export function AppShell({ profile, children }: { profile: UserProfile; children
     <div className="flex min-h-screen bg-muted/40">
       <aside className="hidden w-64 shrink-0 flex-col border-r border-border bg-card md:flex">
         <div className="border-b border-border px-5 py-5">
-          <Link href="/app" className="flex items-center gap-2.5">
-            <span className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-blue-500 text-xs font-bold text-primary-foreground">
-              AV
-            </span>
-            <span className="truncate text-sm font-semibold">Practice workspace</span>
+          <Link href="/app">
+            <Logo wordmark="Practice workspace" compact />
           </Link>
           <p className="mt-3 truncate text-sm font-medium text-foreground">{orgName}</p>
           <Badge

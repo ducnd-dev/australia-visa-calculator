@@ -17,6 +17,7 @@ export type SendAssessmentReportInput = {
   assessmentId: string;
   clientId: string;
   createdBy: string;
+  emailIntro?: string;
 };
 
 export async function sendAssessmentReportEmail(
@@ -116,6 +117,7 @@ export async function sendAssessmentReportEmail(
     pathwaySummary,
     phone: org?.phone,
     website: org?.website,
+    customIntro: input.emailIntro ?? null,
   });
 
   const { data: sendRow } = await admin

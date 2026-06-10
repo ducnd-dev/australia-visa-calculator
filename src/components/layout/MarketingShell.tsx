@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Logo } from "@/components/brand/Logo";
 import { MarketingAtmosphere } from "@/components/layout/MarketingAtmosphere";
 import { MarketingCtaBand } from "@/components/layout/MarketingCtaBand";
 import { MarketingHeader } from "@/components/layout/MarketingHeader";
@@ -23,11 +24,8 @@ export function MarketingShell({ children }: { children: React.ReactNode }) {
         <div className="mx-auto max-w-6xl px-4 py-12">
           <div className="flex flex-col gap-8 md:flex-row md:items-start md:justify-between">
             <div className="max-w-sm">
-              <Link href="/" className="flex items-center gap-2.5 font-semibold text-foreground">
-                <span className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-blue-500 text-sm font-bold text-primary-foreground shadow-sm">
-                  AV
-                </span>
-                Australia Visa Points
+              <Link href="/" className="text-foreground">
+                <Logo />
               </Link>
               <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
                 Schedule 6D estimator for skilled migration. Not migration advice — rules updated{" "}

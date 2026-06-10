@@ -16,7 +16,9 @@ import { DEFAULT_AGENT_DISCLAIMER } from "@/lib/billing/agency-profile";
 import { uploadOrgLogo } from "../billing/actions";
 import { saveAiSettings } from "./ai-actions";
 import { ResendDomainVerifier } from "@/components/settings/ResendDomainVerifier";
+import { EmailTemplatesSection, type EmailTemplateRow } from "@/components/settings/EmailTemplatesSection";
 import { saveEmailSettings } from "./email-actions";
+import { saveWeeklyDigestSetting } from "./email-template-actions";
 import { saveAgencyProfile } from "./profile-actions";
 import { inviteMember, removeMember, revokeInvite } from "./team-actions";
 import { Badge } from "@/components/ui/badge";
@@ -33,6 +35,7 @@ export default async function SettingsPage({
     teamInvited?: string;
     inviteRevoked?: string;
     memberRemoved?: string;
+    templateSaved?: string;
     error?: string;
   }>;
 }) {
@@ -48,6 +51,8 @@ export default async function SettingsPage({
   let replyTo = "";
   let fromDomain = "";
   let fromDomainVerified = false;
+  let weeklyDigestEnabled = false;
+  let emailTemplates: EmailTemplateRow[] = [];
   let maraNumber = "";
   let registeredBusinessName = "";
   let phone = "";
@@ -86,7 +91,7 @@ export default async function SettingsPage({
     if (supabase) {
       const { data: emailRow } = await supabase
         .from("organization_email_settings")
-        .select("from_name, reply_to, from_domain, from_domain_verified")
+        .select("from_name, reply_to, from_domain, from_domain_verified, weekly_digest_enabled")
         .eq("organization_id", profile.organization_id)
         .maybeSingle();
       if (emailRow) {
@@ -94,8 +99,36 @@ export default async function SettingsPage({
         replyTo = emailRow.reply_to ?? "";
         fromDomain = emailRow.from_domain ?? "";
         fromDomainVerified = emailRow.from_domain_verified ?? false;
+        weeklyDigestEnabled = emailRow.weekly_digest_enabled ?? false;
       }
     }
+
+    const templateSlugs = ["client-follow-up", "english-follow-up", "check-in-reminder"];
+    const { data: defaultTemplates } = await admin
+      .from("email_templates")
+      .select("slug, name, subject, body_html")
+      .eq("scope", "organization")
+      .is("organization_id", null)
+      .in("slug", templateSlugs);
+    const { data: orgTemplates } = await admin
+      .from("email_templates")
+      .select("slug, name, subject, body_html")
+      .eq("scope", "organization")
+      .eq("organization_id", profile.organization_id)
+      .in("slug", templateSlugs);
+
+    const orgBySlug = new Map((orgTemplates ?? []).map((t) => [t.slug, t]));
+    emailTemplates = (defaultTemplates ?? []).map((d) => {
+      const custom = orgBySlug.get(d.slug);
+      const row = custom ?? d;
+      return {
+        slug: row.slug,
+        name: row.name,
+        subject: row.subject,
+        body_html: row.body_html,
+        isCustomized: Boolean(custom),
+      };
+    });
 
     const { data: memberRows } = await admin
       .from("profiles")
@@ -120,7 +153,7 @@ export default async function SettingsPage({
   const isAdmin = profile?.role === "admin";
 
   return (
-    <div className="max-w-xl space-y-8">
+    <div className="max-w-2xl space-y-8">
       <AppPageHeader
         title="Settings"
         description="Branding, email sender, and AI preferences for your workspace."
@@ -151,6 +184,9 @@ export default async function SettingsPage({
       )}
       {params.memberRemoved === "1" && (
         <FlashMessage variant="success">Team member removed.</FlashMessage>
+      )}
+      {params.templateSaved === "1" && (
+        <FlashMessage variant="success">Email template saved.</FlashMessage>
       )}
 
       <SectionCard title="Team" description="Workspace members and pending invitations.">
@@ -357,7 +393,31 @@ export default async function SettingsPage({
             Save a custom domain above to check Resend DNS verification.
           </p>
         ) : null}
+        {isAdmin ? (
+          <form action={saveWeeklyDigestSetting} className="mt-6 border-t border-border/60 pt-4">
+            <Field orientation="horizontal" className="items-start">
+              <input
+                type="checkbox"
+                id="weeklyDigestEnabled"
+                name="weeklyDigestEnabled"
+                defaultChecked={weeklyDigestEnabled}
+                className="mt-0.5 size-4 shrink-0 rounded border border-input accent-primary"
+              />
+              <div className="flex flex-col gap-0.5">
+                <FieldLabel htmlFor="weeklyDigestEnabled">Weekly practice digest</FieldLabel>
+                <FieldDescription>
+                  Email your reply-to address each Monday with clients that need attention.
+                </FieldDescription>
+              </div>
+            </Field>
+            <Button type="submit" variant="outline" size="sm" className="mt-3">
+              Save digest preference
+            </Button>
+          </form>
+        ) : null}
       </SectionCard>
+
+      {isAdmin ? <EmailTemplatesSection templates={emailTemplates} /> : null}
 
       <SectionCard title="Practice logo" description="Shown on branded share links and PDF exports.">
         {brandingAllowed ? (

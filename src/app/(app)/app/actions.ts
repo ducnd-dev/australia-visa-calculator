@@ -46,6 +46,11 @@ export async function signUpAgency(formData: FormData): Promise<{ error: string 
     reply_to: email,
   });
 
+  await admin.from("organization_onboarding").upsert({
+    organization_id: org.id,
+    dismissed_at: null,
+  });
+
   redirect("/app");
 }
 
@@ -135,6 +140,7 @@ export async function updateClientRecord(clientId: string, formData: FormData): 
   const marketingConsent = formData.get("marketingConsent") === "on";
   const anzscoCode = String(formData.get("anzscoCode") ?? "").trim() || null;
   const anzscoTitle = String(formData.get("anzscoTitle") ?? "").trim() || null;
+  const status = String(formData.get("status") ?? "active");
 
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
@@ -150,6 +156,7 @@ export async function updateClientRecord(clientId: string, formData: FormData): 
       notes,
       anzsco_code: anzscoCode,
       anzsco_title: anzscoTitle,
+      status: ["lead", "active", "lodged", "archived"].includes(status) ? status : "active",
       marketing_consent_at: marketingConsent ? new Date().toISOString() : null,
       updated_at: new Date().toISOString(),
     })
@@ -205,7 +212,11 @@ export async function archiveClient(clientId: string): Promise<void> {
 
   const { error } = await supabase
     .from("clients")
-    .update({ archived_at: new Date().toISOString(), updated_at: new Date().toISOString() })
+    .update({
+      archived_at: new Date().toISOString(),
+      status: "archived",
+      updated_at: new Date().toISOString(),
+    })
     .eq("id", clientId)
     .eq("organization_id", profile.organization_id);
 
@@ -226,7 +237,7 @@ export async function restoreClient(clientId: string): Promise<void> {
 
   const { error } = await supabase
     .from("clients")
-    .update({ archived_at: null, updated_at: new Date().toISOString() })
+    .update({ archived_at: null, status: "active", updated_at: new Date().toISOString() })
     .eq("id", clientId)
     .eq("organization_id", profile.organization_id);
 

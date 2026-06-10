@@ -12,6 +12,7 @@ export function assessmentReportHtml(params: {
   pathwaySummary?: string | null;
   phone?: string | null;
   website?: string | null;
+  customIntro?: string | null;
 }): string {
   const {
     agencyName,
@@ -25,6 +26,7 @@ export function assessmentReportHtml(params: {
     pathwaySummary,
     phone,
     website,
+    customIntro,
   } = params;
 
   const maraLine = formatMaraLine(maraNumber);
@@ -39,7 +41,7 @@ export function assessmentReportHtml(params: {
   ${maraLine ? `<p style="color: #64748b; font-size: 12px; margin: 0 0 16px;">${escapeHtml(maraLine)}</p>` : ""}
   <h1 style="font-size: 20px; margin: 0 0 16px; font-weight: 600;">Your points assessment summary</h1>
   <p style="margin: 0 0 12px;">Hi ${escapeHtml(clientName)},</p>
-  <p style="margin: 0 0 16px;">Your migration agent has shared an estimate of your skilled migration points under Schedule 6D:</p>
+  ${customIntro ? `<p style="margin: 0 0 16px;">${escapeHtml(customIntro)}</p>` : `<p style="margin: 0 0 16px;">Your migration agent has shared an estimate of your skilled migration points under Schedule 6D:</p>`}
   <p style="font-size: 24px; font-weight: 600; margin: 16px 0; color: #1e40af;"><strong>${totalPoints} points</strong> · Subclass ${visaSubclass}</p>
   ${pathwaySummary ? `<p style="font-size: 14px; color: #475569; margin: 0 0 16px;">${escapeHtml(pathwaySummary)}</p>` : ""}
   <p style="margin: 20px 0;"><a href="${escapeAttr(shareUrl)}" style="display: inline-block; background: #2563eb; color: #fff; text-decoration: none; padding: 12px 20px; border-radius: 8px; font-weight: 500;">View full breakdown</a></p>

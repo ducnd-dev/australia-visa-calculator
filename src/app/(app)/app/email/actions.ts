@@ -11,6 +11,7 @@ export async function sendAssessmentReport(formData: FormData): Promise<void> {
 
   const assessmentId = String(formData.get("assessmentId") ?? "");
   const clientId = String(formData.get("clientId") ?? "");
+  const emailIntro = String(formData.get("emailIntro") ?? "").trim() || undefined;
   if (!assessmentId || !clientId) {
     redirect(`/app/clients/${clientId}?emailError=${encodeURIComponent("Missing assessment")}`);
   }
@@ -20,6 +21,7 @@ export async function sendAssessmentReport(formData: FormData): Promise<void> {
     assessmentId,
     clientId,
     createdBy: profile.id,
+    emailIntro,
   });
 
   revalidatePath(`/app/clients/${clientId}`);

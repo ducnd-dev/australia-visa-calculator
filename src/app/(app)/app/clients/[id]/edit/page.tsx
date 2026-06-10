@@ -14,6 +14,8 @@ import { SectionCard } from "@/components/layout/SectionCard";
 import { Button } from "@/components/ui/button";
 import { FlashMessage } from "@/components/ui/flash-message";
 import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
+import { NativeSelect } from "@/components/ui/native-select";
+import { CLIENT_STATUSES, parseClientStatus } from "@/lib/crm/client-status";
 import { createClient } from "@/lib/supabase/server";
 import { getSessionProfile } from "@/lib/auth/session";
 
@@ -83,6 +85,17 @@ export default async function EditClientPage({
                 defaultCode={client.anzsco_code ?? ""}
                 defaultTitle={client.anzsco_title ?? ""}
               />
+              <Field>
+                <FieldLabel htmlFor="status">Status</FieldLabel>
+                <NativeSelect id="status" name="status" defaultValue={parseClientStatus(client.status)}>
+                  {CLIENT_STATUSES.filter((s) => s !== "archived").map((s) => (
+                    <option key={s} value={s}>
+                      {s.charAt(0).toUpperCase() + s.slice(1)}
+                    </option>
+                  ))}
+                </NativeSelect>
+                <FieldDescription>Track where this client is in your practice workflow.</FieldDescription>
+              </Field>
               <Field orientation="horizontal" className="items-start">
                 <input
                   type="checkbox"

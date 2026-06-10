@@ -9,6 +9,9 @@ import { AssessmentActions } from "@/components/billing/AssessmentActions";
 import { createClient } from "@/lib/supabase/server";
 import { getSessionProfile } from "@/lib/auth/session";
 import { calculateAllPathways, calculatePoints } from "@/lib/visa-rules/gsm/calculate-points";
+import { PointsBreakdownChart } from "@/components/calculator/PointsBreakdownChart";
+import { PdfPreviewPanel } from "@/components/billing/PdfPreviewPanel";
+import { AiDraftNotePanel } from "@/components/ai/AiDraftNotePanel";
 import { SectionCard } from "@/components/layout/SectionCard";
 import { calculatorAnswersSchema } from "@/lib/visa-rules/gsm/calculator-schema";
 import { defaultTargetForVisa, suggestImprovements } from "@/lib/visa-rules/gsm/suggest-improvements";
@@ -71,6 +74,11 @@ export default async function AssessmentDetailPage({ params }: { params: Promise
           shareToken={assessment.share_token}
           plan={profile.organizations?.plan}
           clientEmail={clientRow?.email ?? null}
+          clientName={clientRow?.display_name}
+          totalPoints={result.total}
+          visaSubclass={result.visaSubclass}
+          gap={gap}
+          suggestions={suggestions.map((s) => ({ label: s.label, delta: s.delta }))}
           clientUnsubscribed={!!clientRow?.unsubscribed_at}
           shareRevokedAt={assessment.share_revoked_at}
           shareExpiresAt={assessment.share_expires_at}
@@ -79,13 +87,24 @@ export default async function AssessmentDetailPage({ params }: { params: Promise
       </AppPageHeader>
 
       <div className="space-y-8">
-        {assessment.agent_notes ? (
-          <SectionCard title="Agent notes" description="Internal notes — not shown on client share link.">
-            <p className="whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground">
-              {assessment.agent_notes}
-            </p>
-          </SectionCard>
-        ) : null}
+        <SectionCard title="Points breakdown" description="Visual breakdown by Schedule 6D category.">
+          <PointsBreakdownChart breakdown={result.breakdown} />
+        </SectionCard>
+
+        <PdfPreviewPanel
+          assessmentId={id}
+          plan={profile.organizations?.plan}
+        />
+
+        <AiDraftNotePanel
+          assessmentId={id}
+          initialNotes={assessment.agent_notes ?? ""}
+          result={result}
+          suggestions={suggestions}
+          gap={gap}
+          targetPoints={targetPoints}
+        />
+
         <ResultsSummary
           result={result}
           allPathways={allPathways}

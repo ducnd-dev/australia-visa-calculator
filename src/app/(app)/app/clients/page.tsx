@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { Users } from "lucide-react";
 import { AppPageHeader } from "@/components/layout/AppPageHeader";
+import { ClientStatusBadge } from "@/components/clients/ClientStatusBadge";
 import { ClientAvatar } from "@/components/layout/ClientAvatar";
 import { EmptyState } from "@/components/layout/EmptyState";
+import { CLIENT_STATUSES, parseClientStatus } from "@/lib/crm/client-status";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -18,12 +20,20 @@ function escapeIlike(q: string): string {
 export default async function ClientsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ q?: string; view?: string; sort?: string; archived?: string; deleted?: string }>;
+  searchParams: Promise<{
+    q?: string;
+    view?: string;
+    sort?: string;
+    status?: string;
+    archived?: string;
+    deleted?: string;
+  }>;
 }) {
   const profile = await getSessionProfile();
   const params = await searchParams;
   const supabase = await createClient();
   const viewArchived = params.view === "archived";
+  const statusFilter = params.status?.trim();
   const sortByName = params.sort === "name";
   const q = params.q?.trim() ?? "";
 
@@ -31,6 +41,9 @@ export default async function ClientsPage({
     const sp = new URLSearchParams(base);
     if (q) sp.set("q", q);
     if (sortByName) sp.set("sort", "name");
+    if (statusFilter && CLIENT_STATUSES.includes(statusFilter as (typeof CLIENT_STATUSES)[number])) {
+      sp.set("status", statusFilter);
+    }
     const s = sp.toString();
     return s ? `?${s}` : "";
   }
@@ -39,7 +52,9 @@ export default async function ClientsPage({
     supabase && profile
       ? supabase
           .from("clients")
-          .select("id, display_name, email, internal_ref, anzsco_code, anzsco_title, updated_at")
+          .select(
+            "id, display_name, email, internal_ref, anzsco_code, anzsco_title, updated_at, status, is_example"
+          )
           .eq("organization_id", profile.organization_id)
       : null;
 
@@ -48,6 +63,9 @@ export default async function ClientsPage({
       query = query.not("archived_at", "is", null);
     } else {
       query = query.is("archived_at", null);
+      if (statusFilter && CLIENT_STATUSES.includes(statusFilter as (typeof CLIENT_STATUSES)[number])) {
+        query = query.eq("status", statusFilter);
+      }
     }
     if (q) {
       const pattern = `%${escapeIlike(q)}%`;
@@ -129,6 +147,25 @@ export default async function ClientsPage({
               Archived
             </Link>
           </Button>
+          {!viewArchived &&
+            CLIENT_STATUSES.filter((s) => s !== "archived").map((status) => (
+              <Button
+                key={status}
+                variant={statusFilter === status ? "default" : "outline"}
+                size="sm"
+                asChild
+              >
+                <Link
+                  href={`/app/clients${withQuery({
+                    view: "active",
+                    status,
+                    ...(sortByName ? { sort: "name" } : {}),
+                  })}`}
+                >
+                  {status.charAt(0).toUpperCase() + status.slice(1)}
+                </Link>
+              </Button>
+            ))}
         </div>
       </div>
 
@@ -157,7 +194,16 @@ export default async function ClientsPage({
                   <div className="flex items-start gap-3">
                     <ClientAvatar name={c.display_name} />
                     <div className="min-w-0 flex-1">
-                      <p className="truncate font-semibold text-foreground">{c.display_name}</p>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <p className="truncate font-semibold text-foreground">{c.display_name}</p>
+                        {c.is_example ? (
+                          <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium uppercase text-muted-foreground">
+                            Example
+                          </span>
+                        ) : (
+                          <ClientStatusBadge status={parseClientStatus(c.status)} />
+                        )}
+                      </div>
                       <p className="mt-0.5 truncate text-sm text-muted-foreground">
                         {c.email ?? c.internal_ref ?? "No contact details"}
                       </p>

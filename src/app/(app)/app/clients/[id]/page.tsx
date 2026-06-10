@@ -1,12 +1,19 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ClipboardList } from "lucide-react";
 import { AppPageHeader } from "@/components/layout/AppPageHeader";
 import { ClientAvatar } from "@/components/layout/ClientAvatar";
 import { SectionCard } from "@/components/layout/SectionCard";
 import { AssessmentActions } from "@/components/billing/AssessmentActions";
 import { AssessmentComparePicker } from "@/components/clients/AssessmentComparePicker";
+import { ClientStatusBadge } from "@/components/clients/ClientStatusBadge";
+import { ClientTimeline, buildClientTimeline } from "@/components/clients/ClientTimeline";
 import { StateNominationPanel } from "@/components/clients/StateNominationPanel";
+import { QuickSendEmail } from "@/components/email/QuickSendEmail";
+import { EmptyState } from "@/components/layout/EmptyState";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { parseClientStatus } from "@/lib/crm/client-status";
 import { FlashMessage } from "@/components/ui/flash-message";
 import { createClient } from "@/lib/supabase/server";
 import { getSessionProfile } from "@/lib/auth/session";
@@ -55,7 +62,12 @@ export default async function ClientDetailPage({
 
   return (
     <div className="space-y-8">
-      <AppPageHeader title={client.display_name} description={client.email ?? client.internal_ref ?? undefined}>
+      <AppPageHeader
+        title={client.display_name}
+        description={client.email ?? client.internal_ref ?? undefined}
+      >
+        {client.is_example ? <Badge variant="secondary">Example</Badge> : null}
+        {!client.is_example ? <ClientStatusBadge status={parseClientStatus(client.status)} /> : null}
         <Button variant="outline" asChild>
           <Link href={`/app/clients/${id}/edit`}>Edit</Link>
         </Button>
@@ -116,17 +128,48 @@ export default async function ClientDetailPage({
         }
       />
 
+      <SectionCard title="Activity timeline" description="Assessments, emails, and share events in chronological order.">
+        <ClientTimeline
+          events={buildClientTimeline({
+            assessments: (assessments ?? []).map((a) => ({
+              id: a.id,
+              total_points: a.total_points,
+              visa_subclass: a.visa_subclass,
+              created_at: a.created_at,
+              share_token: a.share_token,
+              share_revoked_at: a.share_revoked_at,
+              share_expires_at: a.share_expires_at,
+            })),
+            emails: (emailLog ?? []).map((e) => ({
+              id: e.id,
+              subject: e.subject,
+              status: e.status,
+              created_at: e.created_at,
+            })),
+          })}
+        />
+      </SectionCard>
+
+      {client.email && !client.unsubscribed_at ? (
+        <SectionCard title="Quick send" description="Send a follow-up using your practice email templates.">
+          <QuickSendEmail clientId={id} clientEmail={client.email} clientName={client.display_name} />
+        </SectionCard>
+      ) : null}
+
       <SectionCard
         title="Assessment history"
         description="Saved Schedule 6D assessments for this client."
       >
         {(assessments ?? []).length === 0 ? (
-          <p className="text-sm text-muted-foreground">
-            No assessments yet.{" "}
-            <Link href={`/app/assessments/new?clientId=${id}`} className="font-medium text-primary hover:underline">
-              Run the first assessment
-            </Link>
-          </p>
+          <EmptyState
+            icon={ClipboardList}
+            title="No assessments yet"
+            description="Run a Schedule 6D assessment to save points and pathway scores to this client file."
+          >
+            <Button asChild>
+              <Link href={`/app/assessments/new?clientId=${id}`}>Run assessment</Link>
+            </Button>
+          </EmptyState>
         ) : (
           <ul className="divide-y divide-border rounded-xl border border-border/80">
             {(assessments ?? []).map((a) => (
@@ -155,6 +198,9 @@ export default async function ClientDetailPage({
                   shareToken={a.share_token}
                   plan={profile.organizations?.plan}
                   clientEmail={client.email}
+                  clientName={client.display_name}
+                  totalPoints={a.total_points}
+                  visaSubclass={a.visa_subclass}
                   clientUnsubscribed={!!client.unsubscribed_at}
                   shareRevokedAt={a.share_revoked_at}
                   shareExpiresAt={a.share_expires_at}

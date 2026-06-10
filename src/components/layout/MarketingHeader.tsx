@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
+import { Logo } from "@/components/brand/Logo";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -28,15 +29,8 @@ export function MarketingHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-border/50 bg-background/70 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4">
-        <Link
-          href="/"
-          className="flex items-center gap-2.5 font-semibold tracking-tight text-foreground"
-          onClick={() => setOpen(false)}
-        >
-          <span className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-blue-500 text-sm font-bold text-primary-foreground shadow-sm">
-            AV
-          </span>
-          <span className="hidden sm:inline">Australia Visa Points</span>
+        <Link href="/" className="text-foreground" onClick={() => setOpen(false)}>
+          <Logo />
         </Link>
 
         <nav aria-label="Primary" className="hidden items-center gap-0.5 md:flex">

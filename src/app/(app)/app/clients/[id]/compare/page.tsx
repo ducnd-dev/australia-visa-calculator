@@ -60,17 +60,24 @@ export default async function CompareAssessmentsPage({
         description={`${client.display_name} · ${new Date(comparison.beforeDate).toLocaleDateString()} vs ${new Date(comparison.afterDate).toLocaleDateString()}`}
       />
 
-      <SectionCard title="Points total">
-        <div className="flex flex-wrap items-center gap-4 text-lg">
-          <span className="font-semibold tabular-nums">{comparison.beforeTotal}</span>
-          <span className="text-muted-foreground">→</span>
-          <span className="font-semibold tabular-nums text-primary">{comparison.afterTotal}</span>
-          <Badge variant={comparison.totalDelta >= 0 ? "success" : "destructive"}>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <SectionCard title="Before">
+          <p className="text-4xl font-bold tabular-nums text-muted-foreground">{comparison.beforeTotal}</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {new Date(comparison.beforeDate).toLocaleDateString()}
+          </p>
+        </SectionCard>
+        <SectionCard title="After">
+          <p className="text-4xl font-bold tabular-nums text-primary">{comparison.afterTotal}</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            {new Date(comparison.afterDate).toLocaleDateString()}
+          </p>
+          <Badge className="mt-3" variant={comparison.totalDelta >= 0 ? "success" : "destructive"}>
             {comparison.totalDelta >= 0 ? "+" : ""}
             {comparison.totalDelta} pts
           </Badge>
-        </div>
-      </SectionCard>
+        </SectionCard>
+      </div>
 
       {comparison.answerChanges.length > 0 && (
         <SectionCard title="What changed">

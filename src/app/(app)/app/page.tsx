@@ -4,6 +4,9 @@ import { AppPageHeader } from "@/components/layout/AppPageHeader";
 import { EmptyState } from "@/components/layout/EmptyState";
 import { StatCard } from "@/components/layout/StatCard";
 import { TrialUpgradeBanner } from "@/components/billing/TrialUpgradeBanner";
+import { AttentionList } from "@/components/dashboard/AttentionList";
+import { OnboardingChecklist } from "@/components/onboarding/OnboardingChecklist";
+import { SeedExampleClientButton } from "@/components/onboarding/SeedExampleClientButton";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { createClient } from "@/lib/supabase/server";
@@ -13,6 +16,8 @@ import { countAiRequestsThisMonth } from "@/lib/ai/limits";
 import { countMarketingSendsThisMonth } from "@/lib/email/send-marketing";
 import { monthlyAiLimit } from "@/lib/ai/limits";
 import { monthlyMarketingLimit } from "@/lib/email/plan-limits";
+import { fetchAttentionItems } from "@/lib/crm/queries";
+import { getOnboardingState } from "@/lib/onboarding/queries";
 import { Mail, Sparkles as SparklesIcon } from "lucide-react";
 
 export default async function DashboardPage() {
@@ -34,7 +39,8 @@ export default async function DashboardPage() {
     const { count: cc } = await supabase
       .from("clients")
       .select("*", { count: "exact", head: true })
-      .eq("organization_id", profile.organization_id);
+      .eq("organization_id", profile.organization_id)
+      .eq("is_example", false);
     const { count: ac } = await supabase
       .from("assessments")
       .select("*", { count: "exact", head: true })
@@ -81,6 +87,16 @@ export default async function DashboardPage() {
   const marketingUsed = profile ? await countMarketingSendsThisMonth(profile.organization_id) : 0;
   const marketingLimit = monthlyMarketingLimit(orgPlan);
 
+  const [onboarding, attentionItems] = profile
+    ? await Promise.all([
+        getOnboardingState(profile.organization_id),
+        fetchAttentionItems(profile.organization_id),
+      ])
+    : [
+        { steps: [], allDone: true, dismissed: true },
+        [] as Awaited<ReturnType<typeof fetchAttentionItems>>,
+      ];
+
   return (
     <div className="space-y-8">
       <TrialUpgradeBanner plan={profile?.organizations?.plan} />
@@ -96,6 +112,8 @@ export default async function DashboardPage() {
           <Link href="/app/clients/new">Add client</Link>
         </Button>
       </AppPageHeader>
+
+      <OnboardingChecklist state={onboarding} />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <StatCard label="Clients" value={clientCount} hint="Active client profiles" icon={Users} />
@@ -126,15 +144,23 @@ export default async function DashboardPage() {
         />
       </div>
 
+      {!isEmpty && <AttentionList items={attentionItems} />}
+
       {isEmpty ? (
         <EmptyState
           icon={Users}
           title="Set up your first client"
           description="Add a client profile, run a Schedule 6D assessment, and share a branded report — all from this dashboard."
+          steps={[
+            { label: "Add a client profile", href: "/app/clients/new" },
+            { label: "Run an assessment", href: "/app/assessments/new" },
+            { label: "Send a report or share link", href: "/app/settings" },
+          ]}
         >
           <Button asChild>
             <Link href="/app/clients/new">Add client</Link>
           </Button>
+          <SeedExampleClientButton />
           <Button variant="outline" asChild>
             <Link href="/calculator">Try public calculator</Link>
           </Button>

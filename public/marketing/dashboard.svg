@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" fill="none">
+  <rect width="800" height="600" fill="#f8fafc"/>
+  <rect x="0" y="0" width="200" height="600" fill="#ffffff" stroke="#e2e8f0"/>
+  <rect x="24" y="28" width="36" height="36" rx="10" fill="#6366f1"/>
+  <rect x="24" y="80" width="152" height="12" rx="4" fill="#e2e8f0"/>
+  <rect x="24" y="120" width="152" height="36" rx="8" fill="#6366f1"/>
+  <rect x="24" y="168" width="152" height="32" rx="8" fill="#f1f5f9"/>
+  <rect x="24" y="212" width="152" height="32" rx="8" fill="#f1f5f9"/>
+  <rect x="240" y="28" width="520" height="48" fill="#ffffff"/>
+  <text x="240" y="58" font-family="system-ui,sans-serif" font-size="20" font-weight="600" fill="#0f172a">Welcome back</text>
+  <rect x="240" y="96" width="160" height="88" rx="12" fill="#ffffff" stroke="#e2e8f0"/>
+  <rect x="416" y="96" width="160" height="88" rx="12" fill="#ffffff" stroke="#e2e8f0"/>
+  <rect x="592" y="96" width="168" height="88" rx="12" fill="#ffffff" stroke="#e2e8f0"/>
+  <text x="256" y="130" font-family="system-ui,sans-serif" font-size="12" fill="#64748b">Clients</text>
+  <text x="256" y="162" font-family="system-ui,sans-serif" font-size="28" font-weight="700" fill="#6366f1">24</text>
+  <text x="432" y="130" font-family="system-ui,sans-serif" font-size="12" fill="#64748b">Assessments</text>
+  <text x="432" y="162" font-family="system-ui,sans-serif" font-size="28" font-weight="700" fill="#6366f1">67</text>
+  <rect x="240" y="208" width="520" height="200" rx="12" fill="#ffffff" stroke="#e2e8f0"/>
+  <text x="256" y="240" font-family="system-ui,sans-serif" font-size="14" font-weight="600" fill="#0f172a">Needs attention</text>
+  <rect x="256" y="256" width="488" height="40" rx="8" fill="#fef3c7"/>
+  <text x="272" y="282" font-family="system-ui,sans-serif" font-size="13" fill="#92400e">Nguyen T.  no assessment on file</text>
+  <rect x="256" y="304" width="488" height="40" rx="8" fill="#fee2e2"/>
+  <text x="272" y="330" font-family="system-ui,sans-serif" font-size="13" fill="#991b1b">Patel S.  latest score below 65 pts</text>
+  <rect x="240" y="424" width="520" height="148" rx="12" fill="#ffffff" stroke="#e2e8f0"/>
+  <text x="256" y="456" font-family="system-ui,sans-serif" font-size="14" font-weight="600" fill="#0f172a">Recent assessments</text>
+  <text x="256" y="490" font-family="system-ui,sans-serif" font-size="13" fill="#334155">Chen L. · Subclass 189</text>
+  <text x="680" y="490" font-family="system-ui,sans-serif" font-size="16" font-weight="700" fill="#6366f1">78</text>
+</svg>

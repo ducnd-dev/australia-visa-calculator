@@ -11,6 +11,7 @@ import type { PointsResult } from "@/lib/visa-rules/types";
 import type { ImprovementSuggestion } from "@/lib/visa-rules/gsm/suggest-improvements";
 import { EOI_MINIMUM_POINTS } from "@/lib/visa-rules/sources";
 import { cn } from "@/lib/utils";
+import { PointsBreakdownChart } from "./PointsBreakdownChart";
 import { PathwayScoresPanel } from "./PathwayScoresPanel";
 import { ResultsInsights } from "./ResultsInsights";
 
@@ -81,9 +82,20 @@ export function ResultsSummary({
         </Card>
       )}
 
+      {isAgency ? (
+        <Card className="border-border/80 shadow-sm">
+          <CardHeader className="border-b border-border/60 bg-muted/20 pb-4">
+            <CardTitle className="text-lg">Points breakdown</CardTitle>
+          </CardHeader>
+          <CardContent className="pt-5">
+            <PointsBreakdownChart breakdown={result.breakdown} />
+          </CardContent>
+        </Card>
+      ) : null}
+
       <Card className="border-border/80 shadow-sm">
         <CardHeader className="border-b border-border/60 bg-muted/20 pb-4">
-          <CardTitle className="text-lg">Points breakdown</CardTitle>
+          <CardTitle className="text-lg">{isAgency ? "Breakdown table" : "Points breakdown"}</CardTitle>
         </CardHeader>
         <CardContent className="p-0">
           <table className="w-full text-sm">
@@ -149,6 +161,18 @@ export function ResultsSummary({
       </div>
 
       {!isAgency && showAds && <AdSlot slot="results-below-summary" format="rectangle" />}
+
+      {!isAgency && result.total >= 65 && (
+        <div className="rounded-xl border border-primary/25 bg-primary/5 px-5 py-4">
+          <p className="text-sm font-semibold text-foreground">Save to your practice workspace</p>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Migration agents can store this assessment in a client file, email reports, and export PDF.
+          </p>
+          <Button className="mt-4" asChild>
+            <Link href="/login?next=/app/assessments/new">Sign in to save assessment</Link>
+          </Button>
+        </div>
+      )}
 
       {!isAgency && (
         <div className="flex flex-wrap gap-3">

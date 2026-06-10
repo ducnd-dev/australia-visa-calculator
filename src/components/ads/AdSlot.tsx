@@ -9,7 +9,11 @@ const formatClass: Record<AdFormat, string> = {
   "in-article": "my-8 min-h-[250px] w-full",
 };
 
-/** Reserved ad area — empty until AdSense is wired. No visible placeholder text. */
+function adsEnabled() {
+  return Boolean(process.env.NEXT_PUBLIC_ADSENSE_CLIENT?.trim());
+}
+
+/** Reserved ad area — hidden until AdSense client id is configured. */
 export function AdSlot({
   slot,
   format = "rectangle",
@@ -19,6 +23,8 @@ export function AdSlot({
   format?: AdFormat;
   className?: string;
 }) {
+  if (!adsEnabled()) return null;
+
   return (
     <div
       aria-hidden

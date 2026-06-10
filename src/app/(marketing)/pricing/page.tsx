@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { Check, Sparkles } from "lucide-react";
 import { StaticPage } from "@/components/layout/StaticPage";
@@ -50,6 +51,9 @@ export default function PricingPage() {
             <p className="text-3xl font-bold tracking-tight text-foreground">Free</p>
           </CardHeader>
           <CardContent className="space-y-6">
+            <div className="relative aspect-video overflow-hidden rounded-lg border border-border/60 bg-muted/30">
+              <Image src="/marketing/assessment.svg" alt="" fill className="object-cover object-top" sizes="300px" />
+            </div>
             <FeatureList items={PUBLIC_PLAN_FEATURES} />
             <Button variant="outline" className="w-full" asChild>
               <Link href="/calculator">Open calculator</Link>
@@ -65,6 +69,9 @@ export default function PricingPage() {
             <p className="text-sm text-muted-foreground">Full workspace to evaluate</p>
           </CardHeader>
           <CardContent className="space-y-6">
+            <div className="relative aspect-video overflow-hidden rounded-lg border border-border/60 bg-muted/30">
+              <Image src="/marketing/dashboard.svg" alt="" fill className="object-cover object-top" sizes="300px" />
+            </div>
             <FeatureList items={TRIAL_PLAN_FEATURES} />
             <Button variant="outline" className="w-full" asChild>
               <Link href="/login">Start trial</Link>
@@ -90,6 +97,9 @@ export default function PricingPage() {
             <p className="text-sm text-muted-foreground">Billed monthly via Stripe · cancel anytime</p>
           </CardHeader>
           <CardContent className="relative space-y-6">
+            <div className="relative aspect-video overflow-hidden rounded-lg border border-primary/20 bg-muted/30">
+              <Image src="/marketing/share.svg" alt="" fill className="object-cover object-top" sizes="300px" />
+            </div>
             <FeatureList items={AGENCY_PLAN_FEATURES} />
             <Button className="w-full shadow-md shadow-primary/20" asChild>
               <Link href="/login">Start trial → upgrade in app</Link>

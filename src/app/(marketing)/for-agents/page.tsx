@@ -1,4 +1,6 @@
 import Link from "next/link";
+import { ProductShowcase } from "@/components/marketing/ProductShowcase";
+import { PlanComparisonTable } from "@/components/marketing/PlanComparisonTable";
 import { StaticPage } from "@/components/layout/StaticPage";
 import { buildMetadata } from "@/lib/seo";
 import { AGENCY_PLAN_FEATURES, TRIAL_PLAN_FEATURES } from "@/lib/static-content/plans";
@@ -13,6 +15,8 @@ export const metadata = buildMetadata({
 
 export default function ForAgentsPage() {
   return (
+    <>
+    <ProductShowcase className="border-b border-border/60 bg-muted/20" />
     <StaticPage
       title="Built for migration agents"
       description="From first consultation to client follow-up — accurate Schedule 6D assessments with professional outputs."
@@ -52,6 +56,9 @@ export default function ForAgentsPage() {
         <li>Transactional assessment emails plus optional marketing campaigns (with consent)</li>
       </ul>
 
+      <h2>Compare plans</h2>
+      <PlanComparisonTable />
+
       <h2>Trial workspace</h2>
       <ul>
         {TRIAL_PLAN_FEATURES.map((f) => (
@@ -87,5 +94,6 @@ export default function ForAgentsPage() {
         <li>Share results or email a report; upgrade when you need PDF and branding.</li>
       </ol>
     </StaticPage>
+    </>
   );
 }

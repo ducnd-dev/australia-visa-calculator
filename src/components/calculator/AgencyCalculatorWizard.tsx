@@ -13,8 +13,6 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FieldError } from "@/components/ui/field";
 import { NativeSelect } from "@/components/ui/native-select";
 import { OptionCard } from "@/components/ui/option-card";
-import { Textarea } from "@/components/ui/textarea";
-import { SimpleField } from "@/components/forms/simple-field";
 import { ResultsSummary } from "./ResultsSummary";
 import { defaultTargetForVisa, suggestImprovements } from "@/lib/visa-rules/gsm/suggest-improvements";
 
@@ -24,6 +22,7 @@ import { StepProgress } from "./StepProgress";
 import { WizardActions } from "./WizardActions";
 import { CardDescription } from "@/components/ui/card";
 import { AiExplainPanel } from "@/components/ai/AiExplainPanel";
+import { AiDraftNotePanel } from "@/components/ai/AiDraftNotePanel";
 
 const STEPS = ["Visa", "Age & English", "Employment", "Education", "Partner & extras", "Results"] as const;
 
@@ -166,9 +165,14 @@ export function AgencyCalculatorWizard({
                   gap={suggestionsData.gap}
                   targetPoints={"targetPoints" in suggestionsData ? suggestionsData.targetPoints : undefined}
                 />
-                <SimpleField label="Agent notes" htmlFor="notes">
-                  <Textarea id="notes" value={agentNotes} onChange={(e) => setAgentNotes(e.target.value)} rows={3} />
-                </SimpleField>
+                <AiDraftNotePanel
+                  result={result}
+                  suggestions={suggestionsData.suggestions}
+                  gap={suggestionsData.gap}
+                  targetPoints={"targetPoints" in suggestionsData ? suggestionsData.targetPoints : undefined}
+                  initialNotes={agentNotes}
+                  onNotesChange={setAgentNotes}
+                />
                 {clientEmail ? (
                   <CheckboxField
                     id="sendEmailAfterSave"

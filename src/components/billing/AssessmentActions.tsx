@@ -13,6 +13,11 @@ export function AssessmentActions({
   shareToken,
   plan,
   clientEmail,
+  clientName,
+  totalPoints,
+  visaSubclass,
+  gap,
+  suggestions,
   clientUnsubscribed,
   shareRevokedAt,
   shareExpiresAt,
@@ -23,6 +28,11 @@ export function AssessmentActions({
   shareToken: string;
   plan: string | null | undefined;
   clientEmail: string | null;
+  clientName?: string;
+  totalPoints?: number;
+  visaSubclass?: string;
+  gap?: number;
+  suggestions?: { label: string; delta: number }[];
   clientUnsubscribed: boolean;
   shareRevokedAt?: string | null;
   shareExpiresAt?: string | null;
@@ -90,6 +100,11 @@ export function AssessmentActions({
         assessmentId={assessmentId}
         clientId={clientId}
         clientEmail={clientEmail}
+        clientName={clientName}
+        totalPoints={totalPoints}
+        visaSubclass={visaSubclass}
+        gap={gap}
+        suggestions={suggestions}
         disabledReason={clientUnsubscribed ? "Client unsubscribed" : undefined}
       />
       {shareActive && (
