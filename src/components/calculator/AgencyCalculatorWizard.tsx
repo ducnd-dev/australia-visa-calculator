@@ -96,7 +96,7 @@ export function AgencyCalculatorWizard({
         <Card className="shadow-sm">
           <CardHeader className="border-b border-border bg-muted/20">
             <CardTitle>{STEPS[step]}</CardTitle>
-            <CardDescription>Agency assessment — saved to client file</CardDescription>
+            <CardDescription>Client assessment — saved to practice file</CardDescription>
           </CardHeader>
           <CardContent className="space-y-6 pt-6">
             {step === 0 && (

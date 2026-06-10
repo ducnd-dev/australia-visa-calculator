@@ -17,7 +17,7 @@ export const TRIAL_PLAN_FEATURES = [
 
 export const AGENCY_PLAN_FEATURES = [
   "Everything in trial",
-  "PDF export and agency logo on share pages",
-  "Branded agency workspace experience",
+  "PDF export and practice logo on share pages",
+  "Branded practice workspace experience",
   `Higher limits: ${monthlyMarketingLimit("agency")} marketing sends and ${monthlyAiLimit("agency")} AI explanations per month`,
 ] as const;

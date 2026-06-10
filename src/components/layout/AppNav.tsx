@@ -27,7 +27,7 @@ export function AppNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="flex flex-1 flex-col gap-0.5 p-3" aria-label="Agency">
+    <nav className="flex flex-1 flex-col gap-0.5 p-3" aria-label="Practice">
       {nav.map((item) => {
         const active = item.exact
           ? pathname === item.href

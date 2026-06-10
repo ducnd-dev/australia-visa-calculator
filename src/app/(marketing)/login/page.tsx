@@ -6,7 +6,7 @@ import { buildMetadata } from "@/lib/seo";
 
 export const metadata = buildMetadata({
   title: "Agent sign in",
-  description: "Sign in to the agency dashboard.",
+  description: "Sign in to your migration practice workspace.",
   path: "/login",
   noIndex: true,
 });
@@ -25,11 +25,11 @@ export default async function LoginPage({
   return (
     <div className="mx-auto flex min-h-[70vh] max-w-lg flex-col justify-center px-4 py-12">
       <PageIntro
-        eyebrow="Agency portal"
+        eyebrow="Practice portal"
         title={invite ? `Join ${invite.orgName}` : "Sign in to your workspace"}
         description={
           invite
-            ? "Accept your team invitation to access the shared agency workspace."
+            ? "Accept your team invitation to access the shared practice workspace."
             : "Manage clients, run assessments, and send reports from one dashboard."
         }
       />

@@ -15,9 +15,9 @@ import { cn } from "@/lib/utils";
 export const metadata = buildMetadata({
   title: "Pricing for Migration Agents",
   description:
-    "Free public calculator for applicants. Agency trial for client files; paid Agency plan for PDF, branding, and higher email and AI limits.",
+    "Free public calculator for applicants. Free practice trial for client files; paid Professional plan for PDF, branding, and higher email and AI limits.",
   path: "/pricing",
-  keywords: ["migration agent software pricing", "visa points calculator agency"],
+  keywords: ["migration agent software pricing", "visa points calculator practice"],
 });
 
 function FeatureList({ items }: { items: readonly string[] }) {
@@ -40,7 +40,7 @@ export default function PricingPage() {
     <StaticPage
       wide
       title="Pricing"
-      description="Free for applicants. Agency trial to evaluate the workspace; paid plan when you need branding and PDF."
+      description="Free for applicants. Free trial to evaluate the practice workspace; paid plan when you need branding and PDF."
     >
       <div className="not-prose grid gap-6 lg:grid-cols-3">
         <Card className="border-border/80 bg-card/90 shadow-sm backdrop-blur-sm">
@@ -85,7 +85,7 @@ export default function PricingPage() {
           </div>
           <CardHeader className="relative pt-10">
             <CardDescription>Migration agents</CardDescription>
-            <CardTitle className="text-2xl">Agency</CardTitle>
+            <CardTitle className="text-2xl">Professional</CardTitle>
             <p className="text-3xl font-bold tracking-tight text-foreground">{agencyPrice}</p>
             <p className="text-sm text-muted-foreground">Billed monthly via Stripe · cancel anytime</p>
           </CardHeader>
@@ -107,7 +107,7 @@ export default function PricingPage() {
 
       <h2>Billing</h2>
       <p>
-        Agency subscriptions are processed by Stripe. Workspace admins can upgrade from{" "}
+        Professional plan subscriptions are processed by Stripe. Workspace admins can upgrade from{" "}
         <strong>Billing</strong> after sign-in and manage payment methods in the Stripe customer
         portal. Prices are shown at checkout in your local currency where supported. Cancel anytime;
         access to paid features ends at the end of the billing period unless otherwise required by

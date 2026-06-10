@@ -7,7 +7,7 @@ import { SITE_FAQS } from "@/lib/static-content/faqs";
 export const metadata = buildMetadata({
   title: "FAQ — Australian Visa Points Calculator",
   description:
-    "Frequently asked questions about Schedule 6D points, subclasses 189/190/491, agency features, share links, and disclaimers.",
+    "Frequently asked questions about Schedule 6D points, subclasses 189/190/491, practice workspace features, share links, and disclaimers.",
   path: "/faq",
 });
 
@@ -17,7 +17,7 @@ export default function FaqPage() {
       <JsonLd data={faqJsonLd(SITE_FAQS)} />
       <StaticPage
         title="Frequently asked questions"
-        description="Points tests, pathways, agency workspace, and important limitations."
+        description="Points tests, pathways, practice workspace, and important limitations."
         cta={{ label: "Calculate your points", href: "/calculator" }}
       >
         <FaqAccordion items={SITE_FAQS} />

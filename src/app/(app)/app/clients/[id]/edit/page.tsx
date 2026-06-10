@@ -93,7 +93,7 @@ export default async function EditClientPage({
                 />
                 <div className="flex flex-col gap-0.5">
                   <FieldLabel htmlFor="marketingConsent">Email updates</FieldLabel>
-                  <FieldDescription>Client consents to receive email updates from your agency.</FieldDescription>
+                  <FieldDescription>Client consents to receive email updates from your practice.</FieldDescription>
                 </div>
               </Field>
               <div className="flex gap-2">

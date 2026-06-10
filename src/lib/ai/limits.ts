@@ -41,7 +41,7 @@ export async function canUseAi(
   if (used >= limit) {
     return {
       allowed: false,
-      reason: `Monthly AI limit reached (${limit}). Upgrade to Agency for more.`,
+      reason: `Monthly AI limit reached (${limit}). Upgrade to Professional for more.`,
       used,
       limit,
     };

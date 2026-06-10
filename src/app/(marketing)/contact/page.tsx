@@ -33,7 +33,7 @@ export default function ContactPage() {
             <a href={`mailto:${SUPPORT_EMAIL}`} className="font-medium text-primary hover:underline">
               {SUPPORT_EMAIL}
             </a>
-            . Include your workspace name if you are an agency user.
+            . Include your workspace name if you use the practice workspace.
           </p>
         </>
       ) : null}
@@ -62,14 +62,14 @@ export default function ContactPage() {
 
       <h2>Privacy requests</h2>
       <p>
-        To request access, correction, or deletion of personal data in an agency workspace, contact us
+        To request access, correction, or deletion of personal data in a practice workspace, contact us
         with the subject line <strong>Privacy request</strong> and the email address on the account.
         See our <Link href="/privacy">privacy policy</Link> for details.
       </p>
 
       <h2>Unsubscribe</h2>
       <p>
-        Marketing emails include an unsubscribe link. Clients who received email from your agency via
+        Marketing emails include an unsubscribe link. Clients who received email from your practice via
         this platform can also use the unsubscribe link in that message to stop marketing from your
         workspace.
       </p>

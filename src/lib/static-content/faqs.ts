@@ -42,28 +42,28 @@ export const SITE_FAQS: FaqItem[] = [
   {
     question: "Does AI calculate my points?",
     answer:
-      "No. Points are calculated only by our deterministic rules engine with automated tests. On agency plans, AI may generate a plain-English explanation of an already-calculated result — it never changes the score.",
+      "No. Points are calculated only by our deterministic rules engine with automated tests. On Professional plans, AI may generate a plain-English explanation of an already-calculated result — it never changes the score.",
   },
   {
     question: "Can migration agents save client assessments?",
     answer:
-      "Yes. Agency workspaces let you store client profiles, run and save Schedule 6D assessments, generate share links, and email assessment reports. PDF export and logo branding on share pages require the paid Agency plan.",
+      "Yes. Practice workspaces let you store client profiles, run and save Schedule 6D assessments, generate share links, and email assessment reports. PDF export and logo branding on share pages require the paid Professional plan.",
   },
   {
-    question: "What is included in the agency trial?",
-    answer: `Trial workspaces include unlimited clients and saved assessments, generic (non-branded) share links, transactional assessment emails, up to ${trialMarketing} marketing sends per month, and up to ${trialAi} AI explanations per month. Upgrade to Agency for PDF export, branded share links, and higher limits (${agencyMarketing} marketing sends, ${agencyAi} AI explanations per month).`,
+    question: "What is included in the free trial?",
+    answer: `Trial workspaces include unlimited clients and saved assessments, generic (non-branded) share links, transactional assessment emails, up to ${trialMarketing} marketing sends per month, and up to ${trialAi} AI explanations per month. Upgrade to Professional for PDF export, branded share links, and higher limits (${agencyMarketing} marketing sends, ${agencyAi} AI explanations per month).`,
   },
   {
     question: "Are share links private?",
     answer:
-      "Anyone with a share link can view that assessment summary while the link is active. Links are unlisted (not indexed for search). Agencies can optionally require a password on each share link, revoke links, generate new ones, and set an expiry period in Settings. Do not share links publicly if the results are sensitive. Agency-branded share pages show your logo only on the paid Agency plan.",
+      "Anyone with a share link can view that assessment summary while the link is active. Links are unlisted (not indexed for search). Practices can optionally require a password on each share link, revoke links, generate new ones, and set an expiry period in Settings. Do not share links publicly if the results are sensitive. Branded share pages show your logo only on the paid Professional plan.",
   },
   {
     question: "How often are the rules updated?",
     answer: `We publish a rules version and last-reviewed date (${LAST_UPDATED}). Legislation and policy can change without notice — confirm the current Schedule 6D and invitation criteria before lodging.`,
   },
   {
-    question: "Can multiple agents share one agency workspace?",
+    question: "Can multiple agents share one practice workspace?",
     answer:
       "Yes. Workspace admins can invite team members from Settings → Team. Agents sign in with their own accounts and share the same clients and assessments. Admins manage billing, branding, and email settings; agents run assessments and manage client files.",
   },

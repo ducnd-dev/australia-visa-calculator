@@ -41,7 +41,7 @@ export default async function BillingPage({
         title="Billing"
         description={
           isAdmin
-            ? "Manage your Agency subscription, PDF export, and branded share links."
+            ? "Manage your Professional plan subscription, PDF export, and branded share links."
             : "View your workspace plan. Contact your admin to upgrade or change billing."
         }
       />
@@ -69,7 +69,7 @@ export default async function BillingPage({
 
       <SectionCard
         title="Current plan"
-        description={isPaid ? "Your workspace includes agency branding features." : "Trial includes unlimited clients and assessments."}
+        description={isPaid ? "Your workspace includes practice branding features." : "Trial includes unlimited clients and assessments."}
         contentClassName="space-y-4 text-sm text-muted-foreground"
       >
         <div className="flex items-center gap-2">
@@ -81,14 +81,14 @@ export default async function BillingPage({
           <ul className="list-inside list-disc space-y-1.5">
             <li>Branded client share links with your logo</li>
             <li>PDF export for assessments</li>
-            <li>Branded agency workspace (no third-party promos)</li>
+            <li>Branded practice workspace (no third-party promos)</li>
           </ul>
         ) : (
           <ul className="list-inside list-disc space-y-1.5">
             <li>Unlimited clients and assessments (trial)</li>
             <li>Generic share links</li>
             <li>
-              Upgrade to Agency ({agencyPrice}) for PDF export and branded share links
+              Upgrade to Professional ({agencyPrice}) for PDF export and branded share links
             </li>
           </ul>
         )}
@@ -99,7 +99,7 @@ export default async function BillingPage({
               <form action={startCheckout}>
                 <Button type="submit" className="gap-2">
                   <CreditCard className="size-4" aria-hidden />
-                  Upgrade to Agency — {agencyPrice}
+                  Upgrade to Professional — {agencyPrice}
                 </Button>
               </form>
             ) : (
@@ -127,7 +127,7 @@ export default async function BillingPage({
         contentClassName="space-y-3 text-sm text-muted-foreground"
       >
         <p>
-          Need more than the Agency plan — multiple offices, SSO, or volume pricing? Contact us for
+          Need more than the Professional plan — multiple offices, SSO, or volume pricing? Contact us for
           Enterprise onboarding.
         </p>
         <Button variant="outline" asChild>

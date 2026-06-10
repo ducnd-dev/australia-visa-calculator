@@ -141,7 +141,7 @@ export default async function SettingsPage({
       {params.emailSaved === "1" && <FlashMessage variant="success">Email settings saved.</FlashMessage>}
       {params.aiSaved === "1" && <FlashMessage variant="success">AI settings saved.</FlashMessage>}
       {params.profileSaved === "1" && (
-        <FlashMessage variant="success">Agency profile saved.</FlashMessage>
+        <FlashMessage variant="success">Practice profile saved.</FlashMessage>
       )}
       {params.teamInvited === "1" && (
         <FlashMessage variant="success">Invitation sent.</FlashMessage>
@@ -233,7 +233,7 @@ export default async function SettingsPage({
       </SectionCard>
 
       <SectionCard
-        title="Agency profile"
+        title="Practice profile"
         description="Shown on client share links, emails, and PDF exports."
       >
         {isAdmin ? (
@@ -251,7 +251,7 @@ export default async function SettingsPage({
                 name="registeredBusinessName"
                 label="Registered business name"
                 defaultValue={registeredBusinessName}
-                description="Optional. Overrides agency name on reports."
+                description="Optional. Overrides practice name on reports."
               />
               <SimpleInputField id="phone" name="phone" label="Phone" defaultValue={phone} />
               <SimpleInputField id="website" name="website" label="Website" defaultValue={website} />
@@ -273,12 +273,12 @@ export default async function SettingsPage({
                 description="Optional. New assessments expire after this many days. Leave empty for no expiry."
               />
               <Button type="submit" variant="outline" size="sm">
-                Save agency profile
+                Save practice profile
               </Button>
             </FormFieldGroup>
           </form>
         ) : (
-          <p className="text-sm text-muted-foreground">Only admins can edit agency profile.</p>
+          <p className="text-sm text-muted-foreground">Only admins can edit practice profile.</p>
         )}
       </SectionCard>
 
@@ -337,7 +337,7 @@ export default async function SettingsPage({
                 name="fromDomain"
                 label="Custom sending domain (optional)"
                 defaultValue={fromDomain}
-                placeholder="agency.com.au"
+                placeholder="yourpractice.com.au"
               />
               <input type="hidden" name="fromDomainVerified" value={fromDomainVerified ? "on" : ""} />
               <Button type="submit" variant="outline" size="sm">
@@ -359,14 +359,14 @@ export default async function SettingsPage({
         ) : null}
       </SectionCard>
 
-      <SectionCard title="Agency logo" description="Shown on branded share links and PDF exports.">
+      <SectionCard title="Practice logo" description="Shown on branded share links and PDF exports.">
         {brandingAllowed ? (
           <>
             {logoUrl && (
               <div className="mb-4 flex items-center gap-4 rounded-xl border border-border bg-muted/30 p-4">
                 <Image
                   src={logoUrl}
-                  alt="Agency logo"
+                  alt="Practice logo"
                   width={120}
                   height={48}
                   className="h-12 w-auto object-contain"
@@ -400,9 +400,9 @@ export default async function SettingsPage({
           </>
         ) : (
           <div className="space-y-3 text-sm text-muted-foreground">
-            <p>Logo branding is available on the Agency plan.</p>
+            <p>Logo branding is available on the Professional plan.</p>
             <Button asChild>
-              <Link href="/app/billing">Upgrade to Agency</Link>
+              <Link href="/app/billing">Upgrade to Professional</Link>
             </Button>
           </div>
         )}

@@ -4,7 +4,7 @@ import { buildMetadata } from "@/lib/seo";
 
 export const metadata = buildMetadata({
   title: "Terms of Service",
-  description: "Terms for using the public calculator and agency workspace.",
+  description: "Terms for using the public calculator and practice workspace.",
   path: "/terms",
 });
 
@@ -23,7 +23,7 @@ export default function TermsPage() {
       <h2>Service description</h2>
       <p>
         We provide a Schedule 6D points <strong>estimator</strong> for subclasses 189, 190, and 491,
-        plus optional agency tools for client management and communication. The service does not
+        plus optional practice workspace tools for client management and communication. The service does not
         provide migration advice — see <Link href="/disclaimer">disclaimer</Link>.
       </p>
 
@@ -33,7 +33,7 @@ export default function TermsPage() {
         <li>You are responsible for safeguarding login credentials and activity under your workspace</li>
         <li>Workspace admins manage billing, settings, and who may use the organisation account</li>
         <li>
-          Agencies are responsible for the accuracy of client data they store and for lawful basis to
+          Migration practices are responsible for the accuracy of client data they store and for lawful basis to
           process client personal information
         </li>
       </ul>
@@ -47,7 +47,7 @@ export default function TermsPage() {
         <li>Do not upload unlawful content or infringe third-party rights</li>
       </ul>
 
-      <h2>Agency email and client consent</h2>
+      <h2>Practice email and client consent</h2>
       <p>
         If you send marketing email to clients through this platform, you confirm you have appropriate
         consent or another lawful basis. Assessment report emails are transactional communications
@@ -57,7 +57,7 @@ export default function TermsPage() {
 
       <h2>Paid plans</h2>
       <p>
-        Agency subscriptions bill through Stripe on a recurring basis until cancelled in the billing
+        Professional plan subscriptions bill through Stripe on a recurring basis until cancelled in the billing
         portal. Fees are shown at checkout. Refunds are at our discretion except where required by
         Australian Consumer Law. Feature limits (email volume, AI usage) apply per plan as described
         on <Link href="/pricing">pricing</Link>.

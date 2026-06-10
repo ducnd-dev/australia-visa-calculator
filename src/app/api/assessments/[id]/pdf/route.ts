@@ -28,7 +28,7 @@ export async function GET(
     : profile.organizations?.plan;
 
   if (!canExportPdf(orgPlan)) {
-    return NextResponse.json({ error: "PDF export requires Agency plan" }, { status: 403 });
+    return NextResponse.json({ error: "PDF export requires Professional plan" }, { status: 403 });
   }
 
   const { data: assessment } = await supabase
@@ -64,7 +64,7 @@ export async function GET(
   try {
     body = await renderAssessmentPdfBuffer({
       clientName: client?.display_name ?? "Client",
-      orgName: org?.name ?? profile.organizations?.name ?? "Agency",
+      orgName: org?.name ?? profile.organizations?.name ?? "Practice",
       logoUrl,
       maraNumber: org?.mara_number ?? null,
       registeredBusinessName: org?.registered_business_name ?? null,

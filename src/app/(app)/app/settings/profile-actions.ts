@@ -13,7 +13,7 @@ export async function saveAgencyProfile(formData: FormData): Promise<void> {
   const profile = await requireProfile();
   if (!profile) redirect("/login");
   if (profile.role !== "admin") {
-    settingsErrorRedirect("Only admins can update agency profile");
+    settingsErrorRedirect("Only admins can update practice profile");
   }
 
   const expiryRaw = String(formData.get("shareLinkExpiryDays") ?? "").trim();

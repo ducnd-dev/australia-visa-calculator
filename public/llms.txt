@@ -1,6 +1,6 @@
 # Australia Visa Points Calculator
 
-> Independent Schedule 6D points estimator for Australian skilled migration subclasses 189, 190, and 491. Includes a visa subclass directory, migration guides, and an agency workspace for registered migration agents. Estimates only — not Department of Home Affairs advice or migration assistance.
+> Independent Schedule 6D points estimator for Australian skilled migration subclasses 189, 190, and 491. Includes a visa subclass directory, migration guides, and a practice workspace for registered migration agents. Estimates only — not Department of Home Affairs advice or migration assistance.
 
 ## Audience
 - Skilled migration applicants (free public calculator)

@@ -12,7 +12,7 @@ export function TrialUpgradeBanner({ plan }: { plan: string | null | undefined }
         <Sparkles className="size-4" aria-hidden />
       </div>
       <p className="min-w-0 flex-1 leading-relaxed text-foreground">
-        <strong className="font-semibold">Trial workspace.</strong> Upgrade to Agency (
+        <strong className="font-semibold">Trial workspace.</strong> Upgrade to Professional (
         {agencyPriceDisplay()}) for PDF export, branded share links, and higher email limits.{" "}
         <Link href="/app/billing" className="font-medium text-primary hover:underline">
           View billing →

@@ -57,7 +57,7 @@ export async function runCampaign(campaignId: string): Promise<RunCampaignResult
 
   const orgId = campaign.organization_id as string | null;
   let plan = "trial";
-  let agencyName = "Your agency";
+  let agencyName = "Your practice";
 
   if (orgId) {
     const { data: org } = await admin.from("organizations").select("name, plan").eq("id", orgId).single();

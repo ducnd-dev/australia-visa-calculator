@@ -75,7 +75,7 @@ export default async function NewCampaignPage({
               required
               className="font-mono text-sm"
               defaultValue={template?.body_html ?? DEFAULT_BODY}
-              description="Variables: {{clientName}}, {{agencyName}}, {{unsubscribeUrl}}, {{disclaimer}}"
+              description="Variables: {{clientName}}, {{agencyName}} (practice name), {{unsubscribeUrl}}, {{disclaimer}}"
             />
             <div className="flex gap-2 pt-2">
               <Button type="submit">Save draft</Button>

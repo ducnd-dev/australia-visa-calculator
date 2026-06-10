@@ -15,7 +15,7 @@ export function canExportPdf(plan: string | null | undefined): boolean {
 export function planLabel(plan: string | null | undefined): string {
   switch (plan) {
     case "agency":
-      return "Agency";
+      return "Professional";
     case "enterprise":
       return "Enterprise";
     default:

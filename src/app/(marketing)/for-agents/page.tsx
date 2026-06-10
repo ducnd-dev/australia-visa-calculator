@@ -16,7 +16,7 @@ export default function ForAgentsPage() {
     <StaticPage
       title="Built for migration agents"
       description="From first consultation to client follow-up — accurate Schedule 6D assessments with professional outputs."
-      cta={{ label: "Start agency trial", href: "/login" }}
+      cta={{ label: "Start free trial", href: "/login" }}
     >
       <h2>A typical workflow</h2>
       <ol>
@@ -33,7 +33,7 @@ export default function ForAgentsPage() {
         </li>
         <li>
           <strong>Deliver</strong> — send a share link, email an assessment report, or export a PDF on
-          the Agency plan.
+          the Professional plan.
         </li>
         <li>
           <strong>Follow up</strong> — re-run assessments when English scores or nomination options
@@ -48,7 +48,7 @@ export default function ForAgentsPage() {
         <li>Team workspace: invite agents, shared clients, role-based access (admin vs agent)</li>
         <li>Compare two saved assessments to show point progress to clients</li>
         <li>Pathway and improvement suggestions based on rule simulations — not AI math</li>
-        <li>Share links for clients; branded logo on share pages with Agency plan</li>
+        <li>Share links for clients; branded logo on share pages with Professional plan</li>
         <li>Transactional assessment emails plus optional marketing campaigns (with consent)</li>
       </ul>
 
@@ -59,7 +59,7 @@ export default function ForAgentsPage() {
         ))}
       </ul>
 
-      <h2>Agency plan (paid)</h2>
+      <h2>Professional plan (paid)</h2>
       <ul>
         {AGENCY_PLAN_FEATURES.map((f) => (
           <li key={f}>{f}</li>
@@ -81,7 +81,7 @@ export default function ForAgentsPage() {
       <h2>Get started</h2>
       <ol>
         <li>
-          <Link href="/login">Create an agency account</Link> (trial — no card required to explore).
+          <Link href="/login">Create a practice account</Link> (free trial — no card required to explore).
         </li>
         <li>Add your first client and run an assessment from the dashboard.</li>
         <li>Share results or email a report; upgrade when you need PDF and branding.</li>

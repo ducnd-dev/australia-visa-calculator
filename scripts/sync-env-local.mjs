@@ -42,11 +42,18 @@ for (const [k, v] of local) {
   if (v) merged.set(k, v);
 }
 
+const pub = merged.get("NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY")?.trim();
+const anon = merged.get("NEXT_PUBLIC_SUPABASE_ANON_KEY")?.trim();
+if (pub && !anon) merged.set("NEXT_PUBLIC_SUPABASE_ANON_KEY", pub);
+
 const quoted = new Set(["EMAIL_FROM_PLATFORM", "EMAIL_FROM_DEFAULT_AGENCY"]);
 
 const sections = [
   { header: "# Synced from .env.example — non-empty .env.local values kept.", keys: [] },
-  { header: "# App", keys: ["NEXT_PUBLIC_SITE_URL", "NEXT_PUBLIC_SUPPORT_EMAIL"] },
+  {
+    header: "# App",
+    keys: ["NEXT_PUBLIC_SITE_URL", "NEXT_PUBLIC_SUPPORT_EMAIL", "NEXT_PUBLIC_AGENCY_PRICE_DISPLAY"],
+  },
   {
     header: "# Supabase",
     keys: [
@@ -56,6 +63,7 @@ const sections = [
       "SUPABASE_SERVICE_ROLE_KEY",
       "DATABASE_URL",
       "SUPABASE_DB_PASSWORD",
+      "SUPABASE_DB_HOST",
     ],
   },
   { header: "# Analytics", keys: ["NEXT_PUBLIC_GA_MEASUREMENT_ID", "NEXT_PUBLIC_ADSENSE_CLIENT_ID"] },
@@ -82,6 +90,16 @@ const sections = [
       "R2_BUCKET_NAME",
       "R2_KEY_PREFIX",
       "NEXT_PUBLIC_R2_PUBLIC_URL",
+      "R2_PUBLIC_URL",
+    ],
+  },
+  {
+    header: "# Launch / QA scripts (local only)",
+    keys: [
+      "PRODUCTION_SITE_URL",
+      "BETA_TEST_EMAIL",
+      "SMOKE_BASE_URL",
+      "LAUNCH_SITE_URL",
     ],
   },
 ];

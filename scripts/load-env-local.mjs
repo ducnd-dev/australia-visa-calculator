@@ -19,7 +19,8 @@ export function loadEnvLocal() {
       if ((val.startsWith('"') && val.endsWith('"')) || (val.startsWith("'") && val.endsWith("'"))) {
         val = val.slice(1, -1);
       }
-      if (!process.env[key]) process.env[key] = val;
+      const existing = process.env[key]?.trim();
+      if (!existing && val) process.env[key] = val;
     }
   }
 }

@@ -3,7 +3,7 @@ import { buildMetadata } from "@/lib/seo";
 
 export const metadata = buildMetadata({
   title: "Set new password",
-  description: "Choose a new password for your agency account.",
+  description: "Choose a new password for your practice account.",
   path: "/login/update-password",
   noIndex: true,
 });

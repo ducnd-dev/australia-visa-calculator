@@ -32,7 +32,7 @@ export default function AboutPage() {
       <ul>
         <li>
           <strong>Registered migration agents and agencies</strong> — maintain client profiles, save
-          assessments, share results, email reports, and (on the Agency plan) export PDFs with your
+          assessments, share results, email reports, and (on the Professional plan) export PDFs with your
           branding.
         </li>
         <li>

@@ -25,7 +25,7 @@ export function MarketingCtaBand() {
             </h2>
             <p className="mt-3 text-sm leading-relaxed text-white/80 md:text-base">
               Score subclasses 189, 190, and 491 together — then share results or save client
-              assessments in your agency workspace.
+              assessments in your practice workspace.
             </p>
           </div>
           <div className="flex shrink-0 flex-wrap justify-center gap-3">
@@ -46,7 +46,7 @@ export function MarketingCtaBand() {
               className="border-white/40 bg-white/10 text-white hover:bg-white/20 hover:text-white"
               asChild
             >
-              <Link href="/login">Agency trial</Link>
+              <Link href="/login">Free trial</Link>
             </Button>
           </div>
         </div>

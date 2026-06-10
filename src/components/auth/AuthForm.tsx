@@ -50,12 +50,12 @@ export function AuthForm({
             ? `Join ${invite.orgName}`
             : mode === "signin"
               ? "Agent sign in"
-              : "Start agency trial"}
+              : "Start free trial"}
         </CardTitle>
         <CardDescription>
           {isInvite
             ? `You were invited as ${invite.role}. Sign in or create an account with ${invite.email}.`
-            : "Migration agency dashboard"}
+            : "Migration practice dashboard"}
         </CardDescription>
       </CardHeader>
       <CardContent className="pt-6">
@@ -106,7 +106,7 @@ export function AuthForm({
         <form onSubmit={handleSubmit}>
           <FormFieldGroup>
             {mode === "signup" && !isInvite && (
-              <SimpleInputField id="orgName" name="orgName" label="Agency name" required />
+              <SimpleInputField id="orgName" name="orgName" label="Practice name" required />
             )}
             {(mode === "signup" || isInvite) && (
               <SimpleInputField id="fullName" name="fullName" label="Your name" required={mode === "signup"} />

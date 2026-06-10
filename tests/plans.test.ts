@@ -13,6 +13,6 @@ describe("billing plans", () => {
     expect(isAgencyPlan("agency")).toBe(true);
     expect(canUseBranding("agency")).toBe(true);
     expect(canExportPdf("agency")).toBe(true);
-    expect(planLabel("agency")).toBe("Agency");
+    expect(planLabel("agency")).toBe("Professional");
   });
 });

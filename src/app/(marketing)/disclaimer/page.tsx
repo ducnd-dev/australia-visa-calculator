@@ -56,7 +56,7 @@ export default function DisclaimerPage() {
         and current legislation.
       </p>
 
-      <h2>AI explanations (agency feature)</h2>
+      <h2>AI explanations (practice workspace)</h2>
       <p>
         Where enabled, AI-generated text summarises <strong>pre-calculated</strong> results. AI does
         not determine point totals and may omit nuance or contain errors. Treat AI output as draft

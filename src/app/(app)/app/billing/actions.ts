@@ -65,7 +65,7 @@ export async function startCheckout(): Promise<void> {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user?.email) billingErrorRedirect("Signed-in user email required");
 
-  const orgName = profile.organizations?.name ?? "Agency";
+  const orgName = profile.organizations?.name ?? "Practice";
   const customerId = await ensureStripeCustomer(profile.organization_id, user.email, orgName);
   if (!customerId) billingErrorRedirect("Could not create Stripe customer");
 
@@ -96,7 +96,7 @@ export async function openBillingPortal(): Promise<void> {
 
   const org = await getOrgBillingFields(profile.organization_id);
   if (!org?.stripe_customer_id) {
-    billingErrorRedirect("No billing account yet. Subscribe to Agency first.");
+    billingErrorRedirect("No billing account yet. Subscribe to Professional first.");
   }
 
   const portal = await stripe.billingPortal.sessions.create({
@@ -118,7 +118,7 @@ export async function uploadOrgLogo(formData: FormData): Promise<void> {
 
   const org = await getOrgBillingFields(profile.organization_id);
   if (org?.plan !== "agency" && org?.plan !== "enterprise") {
-    settingsErrorRedirect("Upgrade to Agency plan to upload a logo.");
+    settingsErrorRedirect("Upgrade to Professional plan to upload a logo.");
   }
 
   const file = formData.get("logo") as File | null;

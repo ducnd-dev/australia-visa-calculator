@@ -25,7 +25,7 @@ export function UpdatePasswordForm() {
     <Card>
       <CardHeader>
         <CardTitle>New password</CardTitle>
-        <CardDescription>Enter a new password for your agency account.</CardDescription>
+        <CardDescription>Enter a new password for your practice account.</CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit}>

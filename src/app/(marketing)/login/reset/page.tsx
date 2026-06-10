@@ -4,7 +4,7 @@ import { buildMetadata } from "@/lib/seo";
 
 export const metadata = buildMetadata({
   title: "Reset password",
-  description: "Request a password reset link for your agency account.",
+  description: "Request a password reset link for your practice account.",
   path: "/login/reset",
   noIndex: true,
 });

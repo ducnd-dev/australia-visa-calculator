@@ -108,7 +108,7 @@ export default async function DashboardPage() {
         <StatCard
           label="Workspace"
           value={plan}
-          hint="PDF & branding on Agency plan"
+          hint="PDF & branding on Professional plan"
           icon={Sparkles}
           className="sm:col-span-2 lg:col-span-1"
         />

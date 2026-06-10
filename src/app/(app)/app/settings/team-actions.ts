@@ -86,7 +86,7 @@ export async function inviteMember(formData: FormData): Promise<void> {
 
   if (error) teamErrorRedirect(error.message);
 
-  const orgName = profile.organizations?.name ?? "Agency";
+  const orgName = profile.organizations?.name ?? "Practice";
   const inviteUrl = `${getSiteUrl()}/login?invite=${token}`;
   const resend = getResend();
   if (resend) {
@@ -98,7 +98,7 @@ export async function inviteMember(formData: FormData): Promise<void> {
       subject: teamInviteSubject(orgName),
       html: teamInviteHtml({
         orgName,
-        inviterName: profile.full_name ?? "Your agency admin",
+        inviterName: profile.full_name ?? "Your practice admin",
         role,
         inviteUrl,
       }),
@@ -244,6 +244,6 @@ export async function getInviteByToken(token: string) {
   return {
     email: invite.email,
     role: invite.role,
-    orgName: org?.name ?? "Agency",
+    orgName: org?.name ?? "Practice",
   };
 }

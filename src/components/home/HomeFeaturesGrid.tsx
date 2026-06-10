@@ -9,7 +9,7 @@ const features = [
   { icon: FileText, title: "Client files", desc: "Store clients and full assessment history in one workspace." },
   { icon: Target, title: "Accurate breakdown", desc: "Schedule 6D logic with employment cap and clear line items." },
   { icon: Sparkles, title: "Pathway suggestions", desc: "See gap-to-target improvements before you lodge an EOI." },
-  { icon: Share2, title: "Share & PDF", desc: "Branded share links and print-ready reports on Agency plan." },
+  { icon: Share2, title: "Share & PDF", desc: "Branded share links and print-ready reports on the Professional plan." },
 ] as const;
 
 export function HomeFeaturesGrid() {

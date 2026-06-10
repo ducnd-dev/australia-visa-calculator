@@ -31,7 +31,7 @@ export function HomeHeroContent({ lastUpdated }: { lastUpdated: string }) {
           </Link>
         </Button>
         <Button size="lg" variant="outline" className="bg-background/60 backdrop-blur-sm" asChild>
-          <Link href="/login">Agency trial</Link>
+          <Link href="/login">Free trial</Link>
         </Button>
       </div>
       <ul className="mt-10 flex flex-wrap gap-4 text-sm">

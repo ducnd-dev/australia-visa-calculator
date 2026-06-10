@@ -45,7 +45,7 @@ export function AppShell({ profile, children }: { profile: UserProfile; children
             <span className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-primary to-blue-500 text-xs font-bold text-primary-foreground">
               AV
             </span>
-            <span className="truncate text-sm font-semibold">Agency workspace</span>
+            <span className="truncate text-sm font-semibold">Practice workspace</span>
           </Link>
           <p className="mt-3 truncate text-sm font-medium text-foreground">{orgName}</p>
           <Badge
@@ -88,7 +88,7 @@ export function AppShell({ profile, children }: { profile: UserProfile; children
 
       <nav
         className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-card/95 px-2 py-1.5 backdrop-blur-md md:hidden"
-        aria-label="Mobile agency"
+        aria-label="Mobile practice workspace"
       >
         <div className="flex">
           {mobileNav.map((item) => {

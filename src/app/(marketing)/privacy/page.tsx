@@ -5,7 +5,7 @@ import { buildMetadata } from "@/lib/seo";
 export const metadata = buildMetadata({
   title: "Privacy Policy",
   description:
-    "How Australia Visa Points Calculator collects, uses, and stores data for public users and agency workspaces.",
+    "How Australia Visa Points Calculator collects, uses, and stores data for public users and practice workspaces.",
   path: "/privacy",
 });
 
@@ -13,12 +13,12 @@ export default function PrivacyPage() {
   return (
     <StaticPage
       title="Privacy Policy"
-      description="How we handle information on the public site and in agency workspaces. Last updated: June 2026."
+      description="How we handle information on the public site and in practice workspaces. Last updated: June 2026."
     >
       <h2>Who we are</h2>
       <p>
         Australia Visa Points Calculator (&quot;we&quot;, &quot;us&quot;) operates a public website
-        and optional agency workspace for Schedule 6D points estimates. Contact details are on our{" "}
+        and optional practice workspace for Schedule 6D points estimates. Contact details are on our{" "}
         <Link href="/contact">contact page</Link>.
       </p>
 
@@ -34,7 +34,7 @@ export default function PrivacyPage() {
           policy and your browser settings
         </li>
       </ul>
-      <h3>Agency accounts</h3>
+      <h3>Practice accounts</h3>
       <ul>
         <li>Account email, name, and organisation details</li>
         <li>Client profiles you create: display name, email, notes, marketing consent, assessments</li>
@@ -45,11 +45,11 @@ export default function PrivacyPage() {
 
       <h2>How we use information</h2>
       <ul>
-        <li>Operate the calculator, agency workspace, billing, and email features</li>
+        <li>Operate the calculator, practice workspace, billing, and email features</li>
         <li>Improve reliability and security of the service</li>
         <li>Send transactional messages you request (e.g. assessment reports)</li>
         <li>
-          Send marketing email only where permitted — agencies must have client consent; agents may
+          Send marketing email only where permitted — practices must have client consent; agents may
           opt in to product updates
         </li>
         <li>Comply with law and respond to abuse or support requests</li>
@@ -66,7 +66,7 @@ export default function PrivacyPage() {
 
       <h2>Retention and deletion</h2>
       <p>
-        Agency data is kept while your workspace remains active. You may request deletion of personal
+        Practice workspace data is kept while your workspace remains active. You may request deletion of personal
         information via <Link href="/contact">contact</Link>. We may retain minimal logs required for
         security, billing disputes, or legal obligations.
       </p>
@@ -74,14 +74,14 @@ export default function PrivacyPage() {
       <h2>Your rights</h2>
       <p>
         Under the Australian Privacy Act 1988 and applicable law, you may request access to, correction
-        of, or deletion of personal information we hold about you, subject to exceptions. Agency
+        of, or deletion of personal information we hold about you, subject to exceptions. Practice
         admins should handle client data requests in line with their own privacy obligations to
         clients.
       </p>
 
       <h2>Spam Act and marketing</h2>
       <p>
-        Agencies must have appropriate consent before sending marketing email to clients through this
+        Practices must have appropriate consent before sending marketing email to clients through this
         platform. We provide unsubscribe mechanisms. See <Link href="/terms">terms</Link>.
       </p>
 
