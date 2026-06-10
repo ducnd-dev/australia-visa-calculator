@@ -21,6 +21,11 @@ const checks = [
   { name: "Pricing", path: "/pricing", expectStatus: 200 },
   { name: "App (auth redirect)", path: "/app", expectStatus: [307, 308, 302, 200] },
   { name: "CSV export (auth required)", path: "/api/clients/export", expectStatus: [401, 307, 302] },
+  {
+    name: "PDF export (auth required)",
+    path: "/api/assessments/00000000-0000-0000-0000-000000000000/pdf",
+    expectStatus: [401, 307, 302, 403, 404],
+  },
   { name: "Stripe webhook (POST only)", path: "/api/stripe/webhook", method: "GET", expectStatus: [405, 400, 401] },
 ];
 
@@ -48,11 +53,14 @@ for (const check of checks) {
   }
 }
 
-console.log("\nManual smoke (signed-in admin):");
+console.log("\nManual smoke (signed-in admin on production):");
 console.log("  1. Sign up → dashboard");
-console.log("  2. Client + ANZSCO → assessment → share link");
-console.log("  3. Settings → team invite → /login?invite= uses production domain");
-console.log("  4. /api/clients/export returns CSV when authenticated");
+console.log("  2. Client + ANZSCO → assessment → share link opens");
+console.log("  3. Phase 8: Download PDF (/api/assessments/[id]/pdf) — logo + breakdown");
+console.log("  4. Phase 8: Enable share password → incognito → gate → unlock → results");
+console.log("  5. Settings → team invite → /login?invite= uses production domain");
+console.log("  6. Phase 8: Resend domain check (if custom from_domain set)");
+console.log("  7. /api/clients/export returns CSV when authenticated");
 
 console.log(failed ? `\n❌ ${failed} check(s) failed.` : "\n✓ Automated smoke passed.");
 process.exit(failed ? 1 : 0);

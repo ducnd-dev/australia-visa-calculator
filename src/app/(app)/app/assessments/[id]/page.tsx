@@ -22,7 +22,7 @@ export default async function AssessmentDetailPage({ params }: { params: Promise
   const { data: assessment } = await supabase
     .from("assessments")
     .select(
-      "id, client_id, answers, share_token, share_revoked_at, share_expires_at, visa_subclass, agent_notes, created_at, created_by, profiles:created_by(full_name), clients(display_name, email, unsubscribed_at, anzsco_code, anzsco_title)"
+      "id, client_id, answers, share_token, share_revoked_at, share_expires_at, share_password_hash, visa_subclass, agent_notes, created_at, created_by, profiles:created_by(full_name), clients(display_name, email, unsubscribed_at, anzsco_code, anzsco_title)"
     )
     .eq("id", id)
     .eq("organization_id", profile.organization_id)
@@ -74,6 +74,7 @@ export default async function AssessmentDetailPage({ params }: { params: Promise
           clientUnsubscribed={!!clientRow?.unsubscribed_at}
           shareRevokedAt={assessment.share_revoked_at}
           shareExpiresAt={assessment.share_expires_at}
+          hasSharePassword={Boolean(assessment.share_password_hash)}
         />
       </AppPageHeader>
 

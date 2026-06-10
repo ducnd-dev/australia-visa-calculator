@@ -33,6 +33,24 @@ export async function inviteMember(formData: FormData): Promise<void> {
   const admin = createAdminClient();
   if (!admin) teamErrorRedirect("Not configured");
 
+  const { data: org } = await admin
+    .from("organizations")
+    .select("seat_limit, name")
+    .eq("id", profile.organization_id)
+    .single();
+
+  if (org?.seat_limit != null) {
+    const { count } = await admin
+      .from("profiles")
+      .select("id", { count: "exact", head: true })
+      .eq("organization_id", profile.organization_id);
+    if ((count ?? 0) >= org.seat_limit) {
+      teamErrorRedirect(
+        `Seat limit reached (${org.seat_limit}). Remove a member or contact support to add seats.`
+      );
+    }
+  }
+
   const existingUser = await findAuthUserByEmail(admin, email);
   if (existingUser) {
     const { data: memberProfile } = await admin

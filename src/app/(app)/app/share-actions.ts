@@ -34,7 +34,7 @@ export async function revokeShareLink(formData: FormData): Promise<void> {
 
   const { error } = await admin
     .from("assessments")
-    .update({ share_revoked_at: new Date().toISOString() })
+    .update({ share_revoked_at: new Date().toISOString(), share_password_hash: null })
     .eq("id", assessmentId)
     .eq("organization_id", profile.organization_id);
 
@@ -72,6 +72,7 @@ export async function regenerateShareLink(formData: FormData): Promise<void> {
       share_token: newToken,
       share_revoked_at: null,
       share_expires_at: shareExpiresAt,
+      share_password_hash: null,
     })
     .eq("id", assessmentId)
     .eq("organization_id", profile.organization_id);

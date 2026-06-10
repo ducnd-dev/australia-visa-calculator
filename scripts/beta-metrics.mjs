@@ -79,7 +79,15 @@ try {
   }
 
   const assessments = await count("assessments");
+  const passwordProtected = await count("assessments", "&share_password_hash=not.is.null");
   console.log(`\nAssessments (total):    ${assessments}`);
+  console.log(`  Password-protected:   ${passwordProtected}${assessments ? ` (${pct(passwordProtected, assessments)})` : ""}`);
+
+  const emailSettings = await restGet(
+    "organization_email_settings?select=from_domain_verified"
+  );
+  const verifiedDomains = emailSettings.filter((r) => r.from_domain_verified).length;
+  console.log(`\nEmail domains verified: ${verifiedDomains} / ${emailSettings.length} org(s) with settings`);
 
   const invites = await restGet(
     "organization_invites?select=id,accepted_at,created_at"
@@ -106,7 +114,8 @@ try {
   console.log("\n--- Weekly review ---");
   console.log("1. Trial → Agency: check Stripe dashboard + organizations.plan");
   console.log("2. Compare usage: GA4 pageviews /app/clients/*/compare");
-  console.log("3. Time-to-find client: qualitative from agency feedback calls");
+  console.log("3. Phase 8 adoption: password share %, verified email domains (above)");
+  console.log("4. Time-to-find client: qualitative from agency feedback calls");
   console.log("\nDone.");
 } catch (err) {
   console.error("Failed:", err.message);

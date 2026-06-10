@@ -92,6 +92,7 @@ if (siteUrl && !isLocalhost) {
 
 console.log("\nDatabase:");
 console.log("  npm run db:migrate && npm run db:check");
+console.log("  Phase 8 columns: assessments.share_password_hash, organizations.seat_limit");
 
 console.log(failed ? `\n❌ ${failed} blocker(s) — fix before beta onboard.` : "\n✓ Required env ready.");
 process.exit(failed ? 1 : 0);

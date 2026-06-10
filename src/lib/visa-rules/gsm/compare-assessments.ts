@@ -1,27 +1,18 @@
 import type { CalculatorAnswers } from "./calculator-schema";
 import type { PointsResult } from "../types";
 import { calculatePoints } from "./calculate-points";
-
-const ANSWER_LABELS: Partial<Record<keyof CalculatorAnswers, string>> = {
-  visaSubclass: "Visa subclass",
-  ageBand: "Age band",
-  english: "English level",
-  overseasYears: "Overseas employment",
-  australianYears: "Australian employment",
-  qualification: "Qualification",
-  australianStudy: "Australian study",
-  regionalStudy: "Regional study",
-  specialistEducation: "Specialist education",
-  naati: "NAATI",
-  professionalYear: "Professional year",
-  partnerStatus: "Partner status",
-};
+import {
+  ANSWER_FIELD_LABELS,
+  answerChangePointsDelta,
+  formatAnswerLabel,
+} from "./answer-labels";
 
 export type AnswerChange = {
   field: keyof CalculatorAnswers;
   label: string;
   before: string;
   after: string;
+  pointsDelta: number | null;
 };
 
 export type BreakdownChange = {
@@ -43,11 +34,6 @@ export type AssessmentCompareResult = {
   breakdownChanges: BreakdownChange[];
 };
 
-function formatAnswerValue(key: keyof CalculatorAnswers, value: unknown): string {
-  if (typeof value === "boolean") return value ? "Yes" : "No";
-  return String(value);
-}
-
 export function compareAssessments(input: {
   beforeId: string;
   afterId: string;
@@ -59,22 +45,29 @@ export function compareAssessments(input: {
   const beforeResult = calculatePoints(input.beforeAnswers);
   const afterResult = calculatePoints(input.afterAnswers);
 
+  const breakdownChanges = diffBreakdown(beforeResult, afterResult);
+
   const answerChanges: AnswerChange[] = [];
   const keys = Object.keys(input.beforeAnswers) as (keyof CalculatorAnswers)[];
   for (const key of keys) {
+    if (key === "clientReference") continue;
     const b = input.beforeAnswers[key];
     const a = input.afterAnswers[key];
     if (b !== a) {
       answerChanges.push({
         field: key,
-        label: ANSWER_LABELS[key] ?? key,
-        before: formatAnswerValue(key, b),
-        after: formatAnswerValue(key, a),
+        label: ANSWER_FIELD_LABELS[key] ?? key,
+        before: formatAnswerLabel(key, b),
+        after: formatAnswerLabel(key, a),
+        pointsDelta: answerChangePointsDelta(
+          key,
+          input.beforeAnswers,
+          input.afterAnswers,
+          breakdownChanges
+        ),
       });
     }
   }
-
-  const breakdownChanges = diffBreakdown(beforeResult, afterResult);
 
   return {
     beforeId: input.beforeId,

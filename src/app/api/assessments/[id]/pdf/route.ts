@@ -2,11 +2,14 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { getSessionProfile } from "@/lib/auth/session";
 import { canExportPdf } from "@/lib/billing/plans";
-import { calculatePoints } from "@/lib/visa-rules/gsm/calculate-points";
+import { calculateAllPathways, calculatePoints } from "@/lib/visa-rules/gsm/calculate-points";
 import { calculatorAnswersSchema } from "@/lib/visa-rules/gsm/calculator-schema";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { resolveDisclaimerFooter } from "@/lib/billing/agency-profile";
+import { orgLogoPublicUrl } from "@/lib/billing/org-logo-url";
+import { LAST_UPDATED } from "@/lib/visa-rules/sources";
+import { renderAssessmentPdfBuffer } from "@/lib/pdf/assessment-report";
 
-/** Server-side PDF export — minimal text PDF for agency plans. */
 export async function GET(
   _request: Request,
   { params }: { params: Promise<{ id: string }> }
@@ -41,57 +44,47 @@ export async function GET(
 
   const answers = calculatorAnswersSchema.parse(assessment.answers);
   const result = calculatePoints(answers);
+  const allPathways = calculateAllPathways(answers);
   const client = assessment.clients as unknown as { display_name: string } | null;
-  const clientName = client?.display_name ?? "Client";
 
-  const lines = [
-    `Assessment — ${clientName}`,
-    `Subclass ${result.visaSubclass} · ${result.total} points`,
-    "",
-    "Breakdown:",
-    ...result.breakdown.map((b) => `  ${b.category}: ${b.points}`),
-    "",
-    "Estimate only — not migration advice.",
-  ];
+  const { data: org } = admin
+    ? await admin
+        .from("organizations")
+        .select(
+          "name, logo_path, mara_number, registered_business_name, phone, website, disclaimer_footer"
+        )
+        .eq("id", profile.organization_id)
+        .single()
+    : { data: null };
 
-  const body = buildSimplePdf(lines.join("\n"));
+  const logoUrl = orgLogoPublicUrl(org?.logo_path);
+  const disclaimerFooter = resolveDisclaimerFooter(org?.disclaimer_footer, org?.mara_number);
+
+  let body: Buffer;
+  try {
+    body = await renderAssessmentPdfBuffer({
+      clientName: client?.display_name ?? "Client",
+      orgName: org?.name ?? profile.organizations?.name ?? "Agency",
+      logoUrl,
+      maraNumber: org?.mara_number ?? null,
+      registeredBusinessName: org?.registered_business_name ?? null,
+      phone: org?.phone ?? null,
+      website: org?.website ?? null,
+      disclaimerFooter,
+      lastUpdated: LAST_UPDATED,
+      result,
+      allPathways,
+    });
+  } catch {
+    return NextResponse.json({ error: "PDF generation failed" }, { status: 500 });
+  }
+
   const filename = `assessment-${id.slice(0, 8)}.pdf`;
 
-  return new NextResponse(Buffer.from(body), {
+  return new NextResponse(new Uint8Array(body), {
     headers: {
       "Content-Type": "application/pdf",
       "Content-Disposition": `attachment; filename="${filename}"`,
     },
   });
-}
-
-/** Minimal PDF 1.4 with Helvetica — no external deps. */
-function buildSimplePdf(text: string): Uint8Array {
-  const escaped = text.replace(/\\/g, "\\\\").replace(/\(/g, "\\(").replace(/\)/g, "\\)");
-  const content = `BT /F1 11 Tf 50 750 Td 14 TL (${escaped}) Tj ET`;
-  const contentLen = content.length;
-
-  const objects = [
-    "1 0 obj<< /Type /Catalog /Pages 2 0 R >>endobj",
-    "2 0 obj<< /Type /Pages /Kids [3 0 R] /Count 1 >>endobj",
-    "3 0 obj<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>endobj",
-    `4 0 obj<< /Length ${contentLen} >>stream\n${content}\nendstream endobj`,
-    "5 0 obj<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>endobj",
-  ];
-
-  let pdf = "%PDF-1.4\n";
-  const offsets: number[] = [0];
-  for (const obj of objects) {
-    offsets.push(pdf.length);
-    pdf += obj + "\n";
-  }
-  const xrefPos = pdf.length;
-  pdf += `xref\n0 ${objects.length + 1}\n`;
-  pdf += "0000000000 65535 f \n";
-  for (let i = 1; i <= objects.length; i++) {
-    pdf += `${String(offsets[i]).padStart(10, "0")} 00000 n \n`;
-  }
-  pdf += `trailer<< /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${xrefPos}\n%%EOF`;
-
-  return new TextEncoder().encode(pdf);
 }

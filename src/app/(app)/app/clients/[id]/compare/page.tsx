@@ -80,6 +80,17 @@ export default async function CompareAssessmentsPage({
                 <p className="font-medium text-foreground">{c.label}</p>
                 <p className="text-muted-foreground">
                   {c.before} → {c.after}
+                  {c.pointsDelta != null && (
+                    <span
+                      className={cn(
+                        "ml-2 font-medium",
+                        c.pointsDelta > 0 ? "text-emerald-600" : "text-destructive"
+                      )}
+                    >
+                      ({c.pointsDelta > 0 ? "+" : ""}
+                      {c.pointsDelta} pts)
+                    </span>
+                  )}
                 </p>
               </li>
             ))}

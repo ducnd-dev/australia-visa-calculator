@@ -1,7 +1,10 @@
 import Link from "next/link";
 import { ExternalLink } from "lucide-react";
 import { SectionCard } from "@/components/layout/SectionCard";
-import { STATE_NOMINATION_REFS } from "@/lib/occupations/state-nomination-refs";
+import {
+  STATE_NOMINATION_REFS,
+  occupationStateNote,
+} from "@/lib/occupations/state-nomination-refs";
 
 export function StateNominationPanel({
   anzscoCode,
@@ -15,6 +18,8 @@ export function StateNominationPanel({
   const relevant = visaSubclass === "190" || visaSubclass === "491" || !visaSubclass;
   if (!anzscoCode || !relevant) return null;
 
+  const occupationNote = occupationStateNote(anzscoCode);
+
   return (
     <SectionCard
       title="State nomination reference"
@@ -25,6 +30,11 @@ export function StateNominationPanel({
           Occupation: <span className="font-medium text-foreground">ANZSCO {anzscoCode}</span>
           {" — "}
           {anzscoTitle}
+        </p>
+      )}
+      {occupationNote && (
+        <p className="mb-4 rounded-lg border border-primary/20 bg-primary/5 px-3 py-2.5 text-sm text-foreground">
+          {occupationNote}
         </p>
       )}
       <ul className="space-y-3">

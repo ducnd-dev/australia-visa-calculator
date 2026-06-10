@@ -459,3 +459,21 @@ comment on column public.organization_email_settings.from_domain is
 comment on column public.organization_email_settings.from_domain_verified is
   'Set true after domain verified in Resend dashboard.';
 
+-- >>> 20261001000000_share_password.sql
+-- Phase 8C: optional password on client share links
+
+alter table public.assessments
+  add column if not exists share_password_hash text;
+
+comment on column public.assessments.share_password_hash is
+  'bcrypt hash; when set, share page requires password before showing results.';
+
+-- >>> 20261002000000_enterprise_seats.sql
+-- Phase 8E: optional seat limit for enterprise workspaces
+
+alter table public.organizations
+  add column if not exists seat_limit integer;
+
+comment on column public.organizations.seat_limit is
+  'Max team members (profiles). Null = unlimited. Enforced on invite when set.';
+

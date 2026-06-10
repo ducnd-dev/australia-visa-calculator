@@ -1,7 +1,11 @@
+import { ANZSCO_ADDITIONAL } from "./anzsco-data/additional";
+
 export type AnzscoOccupation = { code: string; title: string };
 
-/** Curated GSM-relevant occupations — verify against current skilled lists before lodging. */
-export const ANZSCO_SUBSET: AnzscoOccupation[] = [
+/** Curated dataset version — update when occupations list changes. */
+export const ANZSCO_DATASET_VERSION = "2026-06";
+
+const ANZSCO_CORE: AnzscoOccupation[] = [
   { code: "261111", title: "ICT Business Analyst" },
   { code: "261112", title: "Systems Analyst" },
   { code: "261211", title: "Multimedia Specialist" },
@@ -89,6 +93,17 @@ export const ANZSCO_SUBSET: AnzscoOccupation[] = [
   { code: "342111", title: "Airconditioning and Refrigeration Mechanic" },
   { code: "399111", title: "Boat Builder and Repairer" },
 ];
+
+function mergeUnique(sets: AnzscoOccupation[]): AnzscoOccupation[] {
+  const map = new Map<string, AnzscoOccupation>();
+  for (const o of sets) {
+    if (!map.has(o.code)) map.set(o.code, o);
+  }
+  return [...map.values()].sort((a, b) => a.title.localeCompare(b.title));
+}
+
+/** Curated GSM-relevant occupations — verify against current skilled lists before lodging. */
+export const ANZSCO_SUBSET = mergeUnique([...ANZSCO_CORE, ...ANZSCO_ADDITIONAL]);
 
 export function searchAnzsco(query: string, limit = 12): AnzscoOccupation[] {
   const q = query.trim().toLowerCase();

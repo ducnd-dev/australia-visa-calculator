@@ -1,7 +1,8 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { searchAnzsco } from "@/lib/occupations/anzsco-subset";
+import Link from "next/link";
+import { ANZSCO_DATASET_VERSION, searchAnzsco } from "@/lib/occupations/anzsco-subset";
 import { Input } from "@/components/ui/input";
 import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
 import { cn } from "@/lib/utils";
@@ -76,7 +77,16 @@ export function OccupationCombobox({
         )}
       </div>
       <FieldDescription>
-        Reference only — confirm eligibility on current skilled occupation lists.
+        Dataset v{ANZSCO_DATASET_VERSION} — reference only. Confirm on{" "}
+        <Link
+          href="https://immi.homeaffairs.gov.au/visas/working-in-australia/skill-occupation-list"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-primary hover:underline"
+        >
+          Home Affairs occupation search
+        </Link>
+        .
       </FieldDescription>
     </Field>
   );

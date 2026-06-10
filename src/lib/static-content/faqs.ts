@@ -56,7 +56,7 @@ export const SITE_FAQS: FaqItem[] = [
   {
     question: "Are share links private?",
     answer:
-      "Anyone with a share link can view that assessment summary while the link is active. Links are unlisted (not indexed for search) but not password-protected. Agencies can revoke links, generate new ones, and optionally set an expiry period in Settings. Do not share links publicly if the results are sensitive. Agency-branded share pages show your logo only on the paid Agency plan.",
+      "Anyone with a share link can view that assessment summary while the link is active. Links are unlisted (not indexed for search). Agencies can optionally require a password on each share link, revoke links, generate new ones, and set an expiry period in Settings. Do not share links publicly if the results are sensitive. Agency-branded share pages show your logo only on the paid Agency plan.",
   },
   {
     question: "How often are the rules updated?",

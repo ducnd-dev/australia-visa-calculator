@@ -15,6 +15,7 @@ import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
 import { DEFAULT_AGENT_DISCLAIMER } from "@/lib/billing/agency-profile";
 import { uploadOrgLogo } from "../billing/actions";
 import { saveAiSettings } from "./ai-actions";
+import { ResendDomainVerifier } from "@/components/settings/ResendDomainVerifier";
 import { saveEmailSettings } from "./email-actions";
 import { saveAgencyProfile } from "./profile-actions";
 import { inviteMember, removeMember, revokeInvite } from "./team-actions";
@@ -338,22 +339,7 @@ export default async function SettingsPage({
                 defaultValue={fromDomain}
                 placeholder="agency.com.au"
               />
-              <Field className="flex flex-row items-start gap-3">
-                <input
-                  id="fromDomainVerified"
-                  name="fromDomainVerified"
-                  type="checkbox"
-                  defaultChecked={fromDomainVerified}
-                  className="mt-1 size-4 rounded border border-input accent-primary"
-                />
-                <div>
-                  <FieldLabel htmlFor="fromDomainVerified">Domain verified in Resend</FieldLabel>
-                  <FieldDescription>
-                    Add DNS records in Resend, then check this after verification. Falls back to platform
-                    domain if unchecked.
-                  </FieldDescription>
-                </div>
-              </Field>
+              <input type="hidden" name="fromDomainVerified" value={fromDomainVerified ? "on" : ""} />
               <Button type="submit" variant="outline" size="sm">
                 Save email settings
               </Button>
@@ -362,6 +348,15 @@ export default async function SettingsPage({
         ) : (
           <p className="text-sm text-muted-foreground">Only admins can edit email settings.</p>
         )}
+        {isAdmin && fromDomain ? (
+          <div className="mt-4">
+            <ResendDomainVerifier domain={fromDomain} currentlyVerified={fromDomainVerified} />
+          </div>
+        ) : isAdmin ? (
+          <p className="mt-2 text-xs text-muted-foreground">
+            Save a custom domain above to check Resend DNS verification.
+          </p>
+        ) : null}
       </SectionCard>
 
       <SectionCard title="Agency logo" description="Shown on branded share links and PDF exports.">

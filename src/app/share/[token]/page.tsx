@@ -1,4 +1,7 @@
+import { cookies } from "next/headers";
 import { notFound } from "next/navigation";
+import { SharePasswordForm } from "@/components/share/SharePasswordForm";
+import { shareUnlockCookieName } from "@/lib/share/share-password";
 import { calculateAllPathways, calculatePoints } from "@/lib/visa-rules/gsm/calculate-points";
 import { ResultsSummary } from "@/components/calculator/ResultsSummary";
 import { ShareReportHeader } from "@/components/layout/ShareReportHeader";
@@ -27,7 +30,7 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
   const { data } = await admin
     .from("assessments")
     .select(
-      "answers, breakdown, total_points, visa_subclass, share_revoked_at, share_expires_at, clients(display_name), organizations(name, plan, logo_path, mara_number, registered_business_name, phone, website, disclaimer_footer, show_ads)"
+      "answers, breakdown, total_points, visa_subclass, share_revoked_at, share_expires_at, share_password_hash, clients(display_name), organizations(name, plan, logo_path, mara_number, registered_business_name, phone, website, disclaimer_footer, show_ads)"
     )
     .eq("share_token", token)
     .single();
@@ -35,6 +38,15 @@ export default async function SharePage({ params }: { params: Promise<{ token: s
   if (!data) notFound();
 
   const shareStatus = isShareLinkActive(data);
+  const passwordRequired = Boolean(data.share_password_hash);
+  if (passwordRequired) {
+    const jar = await cookies();
+    const unlocked = jar.get(shareUnlockCookieName(token))?.value === "1";
+    if (!unlocked) {
+      return <SharePasswordForm token={token} />;
+    }
+  }
+
   if (!shareStatus.active) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-muted/30 px-4">

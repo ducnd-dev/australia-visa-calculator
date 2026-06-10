@@ -42,6 +42,8 @@ const EXPECTED_TABLES = [
 const EXPECTED_COLUMNS = [
   { table: "clients", columns: ["anzsco_code", "anzsco_title", "archived_at"] },
   { table: "organization_email_settings", columns: ["from_domain", "from_domain_verified"] },
+  { table: "assessments", columns: ["share_password_hash"] },
+  { table: "organizations", columns: ["seat_limit"] },
 ];
 
 loadEnvLocal();
@@ -128,12 +130,15 @@ async function restColumnsOk(table, columns) {
   return { ok: true };
 }
 
+let dbFailures = 0;
+
 console.log("\n=== Connection test (REST / Data API) ===");
 const orgProbe = await restTableOk("organizations");
 if (orgProbe.ok) {
   console.log("✓ organizations reachable via REST");
 } else {
   console.log("❌ organizations:", orgProbe.message);
+  dbFailures += 1;
   console.log("\n→ Run: npm run db:migrate (needs DATABASE_URL in .env.local)");
   console.log("→ Or paste SQL files in Supabase SQL Editor (supabase/migrations/, in order)");
   console.log(
@@ -151,17 +156,23 @@ for (const table of allTables) {
     console.log(`  ✓ ${table}`);
   } else {
     console.log(`  ❌ ${table}: ${probe.message}`);
+    dbFailures += 1;
   }
 }
 
-console.log("\n=== Phase 5+ columns ===");
+console.log("\n=== Phase 5+ / Phase 8 columns ===");
 for (const { table, columns } of EXPECTED_COLUMNS) {
   const probe = await restColumnsOk(table, columns);
   if (probe.ok) {
     console.log(`  ✓ ${table} (${columns.join(", ")})`);
   } else {
     console.log(`  ❌ ${table}: ${probe.message}`);
-    console.log("     → Run migrations 20260802000000_client_crm.sql and 20260901000000_email_domain.sql");
+    dbFailures += 1;
+    if (table === "assessments" || table === "organizations") {
+      console.log("     → Run migrations 20261001000000_share_password.sql and 20261002000000_enterprise_seats.sql");
+    } else {
+      console.log("     → Run migrations 20260802000000_client_crm.sql and 20260901000000_email_domain.sql");
+    }
   }
 }
 
@@ -187,7 +198,14 @@ const migrations = [
   "20260801000000_team_invites.sql",
   "20260802000000_client_crm.sql",
   "20260901000000_email_domain.sql",
+  "20261001000000_share_password.sql",
+  "20261002000000_enterprise_seats.sql",
 ];
 for (const m of migrations) console.log(" ", m);
 
-console.log("\nDone.");
+if (dbFailures > 0) {
+  console.log(`\n❌ ${dbFailures} database check(s) failed. Run npm run db:migrate`);
+  process.exit(1);
+}
+
+console.log("\n✓ Database schema checks passed.");

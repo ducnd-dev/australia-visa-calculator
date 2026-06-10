@@ -119,12 +119,11 @@ describe("compareAssessments extended", () => {
     });
     expect(result.totalDelta).toBe(10);
     const englishChange = result.answerChanges.find((c) => c.field === "english");
-    expect(englishChange).toEqual({
-      field: "english",
-      label: "English level",
-      before: "competent",
-      after: "proficient",
-    });
+    expect(englishChange?.field).toBe("english");
+    expect(englishChange?.label).toBe("English level");
+    expect(englishChange?.before).toContain("Competent English");
+    expect(englishChange?.after).toContain("Proficient English");
+    expect(englishChange?.pointsDelta).toBe(10);
     const englishBreakdown = result.breakdownChanges.find((b) =>
       b.category.toLowerCase().includes("english")
     );

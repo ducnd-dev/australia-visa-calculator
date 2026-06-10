@@ -4,6 +4,7 @@ import { regenerateShareLink, revokeShareLink } from "@/app/(app)/app/share-acti
 import { canExportPdf } from "@/lib/billing/plans";
 import { isShareLinkActive } from "@/lib/billing/share-link";
 import { SendAssessmentForm } from "@/components/email/SendAssessmentForm";
+import { SharePasswordControls } from "@/components/billing/SharePasswordControls";
 import { Button } from "@/components/ui/button";
 
 export function AssessmentActions({
@@ -15,6 +16,7 @@ export function AssessmentActions({
   clientUnsubscribed,
   shareRevokedAt,
   shareExpiresAt,
+  hasSharePassword = false,
 }: {
   assessmentId: string;
   clientId: string;
@@ -24,6 +26,7 @@ export function AssessmentActions({
   clientUnsubscribed: boolean;
   shareRevokedAt?: string | null;
   shareExpiresAt?: string | null;
+  hasSharePassword?: boolean;
 }) {
   const shareActive = isShareLinkActive({
     share_revoked_at: shareRevokedAt,
@@ -89,6 +92,15 @@ export function AssessmentActions({
         clientEmail={clientEmail}
         disabledReason={clientUnsubscribed ? "Client unsubscribed" : undefined}
       />
+      {shareActive && (
+        <div className="w-full basis-full">
+          <SharePasswordControls
+            assessmentId={assessmentId}
+            clientId={clientId}
+            hasPassword={hasSharePassword}
+          />
+        </div>
+      )}
     </div>
   );
 }

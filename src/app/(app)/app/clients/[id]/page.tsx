@@ -41,7 +41,7 @@ export default async function ClientDetailPage({
   const { data: assessments } = await supabase
     .from("assessments")
     .select(
-      "id, total_points, visa_subclass, created_at, share_token, share_revoked_at, share_expires_at, created_by, profiles:created_by(full_name)"
+      "id, total_points, visa_subclass, created_at, share_token, share_revoked_at, share_expires_at, share_password_hash, created_by, profiles:created_by(full_name)"
     )
     .eq("client_id", id)
     .order("created_at", { ascending: false });
@@ -158,6 +158,7 @@ export default async function ClientDetailPage({
                   clientUnsubscribed={!!client.unsubscribed_at}
                   shareRevokedAt={a.share_revoked_at}
                   shareExpiresAt={a.share_expires_at}
+                  hasSharePassword={Boolean(a.share_password_hash)}
                 />
               </li>
             ))}
