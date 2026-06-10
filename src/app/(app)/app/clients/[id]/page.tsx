@@ -4,6 +4,8 @@ import { AppPageHeader } from "@/components/layout/AppPageHeader";
 import { ClientAvatar } from "@/components/layout/ClientAvatar";
 import { SectionCard } from "@/components/layout/SectionCard";
 import { AssessmentActions } from "@/components/billing/AssessmentActions";
+import { AssessmentComparePicker } from "@/components/clients/AssessmentComparePicker";
+import { StateNominationPanel } from "@/components/clients/StateNominationPanel";
 import { Button } from "@/components/ui/button";
 import { FlashMessage } from "@/components/ui/flash-message";
 import { createClient } from "@/lib/supabase/server";
@@ -14,7 +16,13 @@ export default async function ClientDetailPage({
   searchParams,
 }: {
   params: Promise<{ id: string }>;
-  searchParams: Promise<{ emailSent?: string; emailError?: string; saved?: string }>;
+  searchParams: Promise<{
+    emailSent?: string;
+    emailError?: string;
+    saved?: string;
+    shareRevoked?: string;
+    shareRegenerated?: string;
+  }>;
 }) {
   const { id } = await params;
   const query = await searchParams;
@@ -32,7 +40,9 @@ export default async function ClientDetailPage({
 
   const { data: assessments } = await supabase
     .from("assessments")
-    .select("id, total_points, visa_subclass, created_at, share_token")
+    .select(
+      "id, total_points, visa_subclass, created_at, share_token, share_revoked_at, share_expires_at, created_by, profiles:created_by(full_name)"
+    )
     .eq("client_id", id)
     .order("created_at", { ascending: false });
 
@@ -59,6 +69,12 @@ export default async function ClientDetailPage({
         <FlashMessage variant="success">Assessment report emailed to {client.email}.</FlashMessage>
       )}
       {query.emailError && <FlashMessage variant="error">{decodeURIComponent(query.emailError)}</FlashMessage>}
+      {query.shareRevoked === "1" && (
+        <FlashMessage variant="success">Share link revoked. Generate a new link to share again.</FlashMessage>
+      )}
+      {query.shareRegenerated === "1" && (
+        <FlashMessage variant="success">New share link created.</FlashMessage>
+      )}
 
       <div className="flex items-start gap-4 rounded-2xl border border-border/80 bg-card p-5 shadow-sm">
         <ClientAvatar name={client.display_name} size="lg" />
@@ -75,11 +91,30 @@ export default async function ClientDetailPage({
               <span className="text-foreground">{client.internal_ref}</span>
             </p>
           )}
+          {client.anzsco_code && (
+            <p>
+              <span className="text-muted-foreground">Occupation · </span>
+              <span className="text-foreground">
+                ANZSCO {client.anzsco_code}
+                {client.anzsco_title ? ` — ${client.anzsco_title}` : ""}
+              </span>
+            </p>
+          )}
           {client.notes && (
             <p className="pt-2 leading-relaxed text-muted-foreground">{client.notes}</p>
           )}
         </div>
       </div>
+
+      <StateNominationPanel
+        anzscoCode={client.anzsco_code}
+        anzscoTitle={client.anzsco_title}
+        visaSubclass={
+          assessments?.[0]?.visa_subclass === "190" || assessments?.[0]?.visa_subclass === "491"
+            ? assessments[0].visa_subclass
+            : null
+        }
+      />
 
       <SectionCard
         title="Assessment history"
@@ -108,6 +143,10 @@ export default async function ClientDetailPage({
                   </Link>
                   <p className="text-xs text-muted-foreground">
                     {new Date(a.created_at).toLocaleString()}
+                    {(() => {
+                      const creator = a.profiles as unknown as { full_name: string | null } | null;
+                      return creator?.full_name ? ` · ${creator.full_name}` : "";
+                    })()}
                   </p>
                 </div>
                 <AssessmentActions
@@ -117,10 +156,21 @@ export default async function ClientDetailPage({
                   plan={profile.organizations?.plan}
                   clientEmail={client.email}
                   clientUnsubscribed={!!client.unsubscribed_at}
+                  shareRevokedAt={a.share_revoked_at}
+                  shareExpiresAt={a.share_expires_at}
                 />
               </li>
             ))}
           </ul>
+        )}
+        {(assessments ?? []).length >= 2 && (
+          <AssessmentComparePicker
+            clientId={id}
+            assessments={(assessments ?? []).map((a) => ({
+              id: a.id,
+              label: `${a.total_points} pts · ${new Date(a.created_at).toLocaleDateString()}`,
+            }))}
+          />
         )}
       </SectionCard>
 

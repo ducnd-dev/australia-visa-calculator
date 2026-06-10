@@ -1,13 +1,16 @@
 import { createAdminClient } from "@/lib/supabase/admin";
+import { resolveDisclaimerFooter } from "@/lib/billing/agency-profile";
+import { canUseBranding } from "@/lib/billing/plans";
+import { orgLogoPublicUrl } from "@/lib/billing/org-logo-url";
+import { isShareLinkActive } from "@/lib/billing/share-link";
 import { getResend } from "@/lib/email/resend";
 import {
   assessmentReportHtml,
   assessmentReportSubject,
 } from "@/lib/email/templates/assessment-report";
 import { getSiteUrl } from "@/lib/stripe/client";
-
-const DISCLAIMER =
-  "This is an estimate only and is not migration advice. Confirm scores via official Department of Home Affairs sources before lodging an EOI.";
+import { calculateAllPathways } from "@/lib/visa-rules/gsm/calculate-points";
+import { calculatorAnswersSchema } from "@/lib/visa-rules/gsm/calculator-schema";
 
 export type SendAssessmentReportInput = {
   organizationId: string;
@@ -27,13 +30,20 @@ export async function sendAssessmentReportEmail(
 
   const { data: assessment, error: assessmentError } = await admin
     .from("assessments")
-    .select("id, total_points, visa_subclass, share_token, client_id, organization_id, clients(display_name, email, unsubscribed_at)")
+    .select(
+      "id, total_points, visa_subclass, share_token, answers, share_revoked_at, share_expires_at, client_id, organization_id, clients(display_name, email, unsubscribed_at)"
+    )
     .eq("id", input.assessmentId)
     .eq("organization_id", input.organizationId)
     .single();
 
   if (assessmentError || !assessment) {
     return { ok: false, error: "Assessment not found" };
+  }
+
+  const shareStatus = isShareLinkActive(assessment);
+  if (!shareStatus.active) {
+    return { ok: false, error: shareStatus.reason ?? "Share link is not active" };
   }
 
   const client = assessment.clients as unknown as {
@@ -51,32 +61,61 @@ export async function sendAssessmentReportEmail(
 
   const { data: org } = await admin
     .from("organizations")
-    .select("name")
+    .select(
+      "name, plan, logo_path, mara_number, registered_business_name, phone, website, disclaimer_footer"
+    )
     .eq("id", input.organizationId)
     .single();
 
   const { data: emailSettings } = await admin
     .from("organization_email_settings")
-    .select("from_name, reply_to")
+    .select("from_name, reply_to, from_domain, from_domain_verified")
     .eq("organization_id", input.organizationId)
     .maybeSingle();
 
   const agencyName = emailSettings?.from_name ?? org?.name ?? "Your migration agent";
-  const fromAddress =
+  const platformFrom =
     process.env.EMAIL_FROM_DEFAULT_AGENCY ??
     process.env.EMAIL_FROM_PLATFORM ??
     "onboarding@resend.dev";
+  const customDomain =
+    emailSettings?.from_domain_verified && emailSettings.from_domain
+      ? emailSettings.from_domain
+      : null;
+  const fromAddress = customDomain
+    ? `${agencyName.replace(/[<>@]/g, "")} <reports@${customDomain}>`
+    : platformFrom;
   const replyTo = emailSettings?.reply_to || undefined;
 
   const shareUrl = `${getSiteUrl()}/share/${assessment.share_token}`;
   const subject = assessmentReportSubject(client.display_name, assessment.total_points);
+  const disclaimer = resolveDisclaimerFooter(org?.disclaimer_footer, org?.mara_number);
+  const branded = canUseBranding(org?.plan);
+  const logoUrl = branded ? orgLogoPublicUrl(org?.logo_path) : null;
+
+  let pathwaySummary: string | null = null;
+  try {
+    const answers = calculatorAnswersSchema.parse(assessment.answers);
+    const all = calculateAllPathways(answers);
+    pathwaySummary = all.pathways
+      .map((p) => `Subclass ${p.code}: ${p.total} pts`)
+      .join(" · ");
+  } catch {
+    pathwaySummary = null;
+  }
+
   const html = assessmentReportHtml({
-    agencyName,
+    agencyName: org?.registered_business_name ?? agencyName,
     clientName: client.display_name,
     totalPoints: assessment.total_points,
     visaSubclass: assessment.visa_subclass,
     shareUrl,
-    disclaimer: DISCLAIMER,
+    disclaimer,
+    logoUrl,
+    maraNumber: org?.mara_number,
+    pathwaySummary,
+    phone: org?.phone,
+    website: org?.website,
   });
 
   const { data: sendRow } = await admin

@@ -9,6 +9,7 @@ import {
   PUBLIC_PLAN_FEATURES,
   TRIAL_PLAN_FEATURES,
 } from "@/lib/static-content/plans";
+import { agencyPriceDisplay } from "@/lib/billing/display-price";
 import { cn } from "@/lib/utils";
 
 export const metadata = buildMetadata({
@@ -33,6 +34,8 @@ function FeatureList({ items }: { items: readonly string[] }) {
 }
 
 export default function PricingPage() {
+  const agencyPrice = agencyPriceDisplay();
+
   return (
     <StaticPage
       wide
@@ -83,8 +86,8 @@ export default function PricingPage() {
           <CardHeader className="relative pt-10">
             <CardDescription>Migration agents</CardDescription>
             <CardTitle className="text-2xl">Agency</CardTitle>
-            <p className="text-3xl font-bold tracking-tight text-foreground">Paid</p>
-            <p className="text-sm text-muted-foreground">Billed monthly via Stripe</p>
+            <p className="text-3xl font-bold tracking-tight text-foreground">{agencyPrice}</p>
+            <p className="text-sm text-muted-foreground">Billed monthly via Stripe · cancel anytime</p>
           </CardHeader>
           <CardContent className="relative space-y-6">
             <FeatureList items={AGENCY_PLAN_FEATURES} />

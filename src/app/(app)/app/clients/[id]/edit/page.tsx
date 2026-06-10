@@ -1,6 +1,13 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
-import { updateClientRecord } from "@/app/(app)/app/actions";
+import {
+  archiveClient,
+  deleteClient,
+  restoreClient,
+  updateClientRecord,
+} from "@/app/(app)/app/actions";
+import { ConfirmDeleteButton } from "@/components/clients/ConfirmDeleteButton";
+import { OccupationCombobox } from "@/components/clients/OccupationCombobox";
 import { FormFieldGroup, SimpleInputField, SimpleTextareaField } from "@/components/forms/simple-field";
 import { AppPageHeader } from "@/components/layout/AppPageHeader";
 import { SectionCard } from "@/components/layout/SectionCard";
@@ -32,6 +39,11 @@ export default async function EditClientPage({
   if (!client) notFound();
 
   const update = updateClientRecord.bind(null, id);
+  const archive = archiveClient.bind(null, id);
+  const restore = restoreClient.bind(null, id);
+  const remove = deleteClient.bind(null, id);
+  const isAdmin = profile.role === "admin";
+  const isArchived = !!client.archived_at;
 
   return (
     <div className="max-w-lg space-y-6">
@@ -67,6 +79,10 @@ export default async function EditClientPage({
                 rows={3}
                 defaultValue={client.notes ?? ""}
               />
+              <OccupationCombobox
+                defaultCode={client.anzsco_code ?? ""}
+                defaultTitle={client.anzsco_title ?? ""}
+              />
               <Field orientation="horizontal" className="items-start">
                 <input
                   type="checkbox"
@@ -88,6 +104,25 @@ export default async function EditClientPage({
               </div>
             </FormFieldGroup>
         </form>
+      </SectionCard>
+
+      <SectionCard title="Archive or delete" description="Archived clients are hidden from active lists and marketing.">
+        <div className="flex flex-wrap gap-2">
+          {!isArchived ? (
+            <form action={archive}>
+              <Button type="submit" variant="outline" size="sm">
+                Archive client
+              </Button>
+            </form>
+          ) : (
+            <form action={restore}>
+              <Button type="submit" variant="outline" size="sm">
+                Restore client
+              </Button>
+            </form>
+          )}
+          {isAdmin && <ConfirmDeleteButton action={remove} />}
+        </div>
       </SectionCard>
     </div>
   );

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { Sparkles } from "lucide-react";
+import { agencyPriceDisplay } from "@/lib/billing/display-price";
 import { isAgencyPlan } from "@/lib/billing/plans";
 
 export function TrialUpgradeBanner({ plan }: { plan: string | null | undefined }) {
@@ -11,8 +12,8 @@ export function TrialUpgradeBanner({ plan }: { plan: string | null | undefined }
         <Sparkles className="size-4" aria-hidden />
       </div>
       <p className="min-w-0 flex-1 leading-relaxed text-foreground">
-        <strong className="font-semibold">Trial workspace.</strong> Upgrade to unlock PDF export,
-        branded share links, and higher email limits.{" "}
+        <strong className="font-semibold">Trial workspace.</strong> Upgrade to Agency (
+        {agencyPriceDisplay()}) for PDF export, branded share links, and higher email limits.{" "}
         <Link href="/app/billing" className="font-medium text-primary hover:underline">
           View billing →
         </Link>

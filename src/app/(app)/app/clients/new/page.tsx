@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { createClientRecord } from "@/app/(app)/app/actions";
+import { OccupationCombobox } from "@/components/clients/OccupationCombobox";
 import { FormFieldGroup, SimpleInputField, SimpleTextareaField } from "@/components/forms/simple-field";
 import { AppPageHeader } from "@/components/layout/AppPageHeader";
 import { SectionCard } from "@/components/layout/SectionCard";
@@ -23,6 +24,7 @@ export default async function NewClientPage({ searchParams }: { searchParams: Pr
               <SimpleInputField id="email" name="email" type="email" label="Email" />
               <SimpleInputField id="internalRef" name="internalRef" label="Internal reference" />
               <SimpleTextareaField id="notes" name="notes" label="Notes" rows={3} />
+              <OccupationCombobox />
               <Field orientation="horizontal" className="items-start">
                 <input
                   type="checkbox"

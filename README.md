@@ -127,3 +127,69 @@ New signups stay on **trial** (full CRUD); upgrade when PDF/branding is needed.
 3. Signed-in agency: **Generate explanation** on assessment results or `/app/assessments/[id]`.
 4. Limits: **10** AI calls/month (trial), **500** (Agency plan). Points always from `calculatePoints()` — AI only narrates.
 
+## Phase 5+ — Team & CRM (beta)
+
+Apply migrations (in order through `20260901000000_email_domain.sql`):
+
+```bash
+npm run db:migrate
+npm run db:check    # tables, Phase 5+ columns, beta env checklist
+```
+
+### Agency routes (Phase 5+)
+
+| Route | Purpose |
+|-------|---------|
+| `/app/settings` | Team invites, MARA profile, email domain, logo |
+| `/app/clients?q=` | Search clients by name, email, ref, ANZSCO |
+| `/app/clients?view=archived` | Archived clients |
+| `/app/clients/[id]/compare?a=&b=` | Compare two assessments |
+| `/api/clients/export` | CSV export (active clients + latest assessment) |
+| `/api/assessments/[id]/pdf` | Server PDF download (Agency plan) |
+
+### Team invite flow
+
+1. Admin → **Settings → Team** → invite email + role (agent/admin).
+2. Recipient opens `/login?invite={token}` → sign up or sign in with invited email.
+3. Both users see shared clients/assessments. Agents cannot manage billing or marketing sends.
+
+### Team invite edge cases
+
+| Situation | Behavior |
+|-----------|----------|
+| Email already in another workspace | Clear error; contact support to transfer |
+| Invite expired | Admin revokes and sends a new invite |
+| User already has own agency org | Cannot join a second workspace via invite |
+
+### Beta QA checklist
+
+Before onboarding agencies, run manually (two browsers / incognito):
+
+1. **Team:** invite → accept → both see same clients
+2. **CRM:** ANZSCO on client → search → archive → excluded from marketing → restore
+3. **Compare:** two assessments → delta points correct
+4. **Share:** revoke/regenerate/expiry; paid org `show_ads=false` hides ads on share
+5. **Billing:** agent cannot checkout; admin upgrade → logo → branded share
+6. **Export:** CSV includes latest assessment columns
+
+```bash
+npm run test && npm run build
+```
+
+### Beta execution (deploy & onboard)
+
+| Command | Purpose |
+|---------|---------|
+| `npm run beta:preflight` | Production env + webhook URL checklist |
+| `npm run beta:smoke` | HTTP smoke test (`SMOKE_BASE_URL` optional) |
+| `npm run beta:metrics` | Weekly Supabase metrics summary |
+
+Docs: [docs/DEPLOY.md](docs/DEPLOY.md), [docs/BETA-QA-SIGNOFF.md](docs/BETA-QA-SIGNOFF.md), [docs/BETA-AGENCY-TRACKER.md](docs/BETA-AGENCY-TRACKER.md), [docs/BETA-LEARNINGS.md](docs/BETA-LEARNINGS.md)
+
+### Beta metrics to track
+
+- Invites sent / accepted rate (`npm run beta:metrics`)
+- % clients with ANZSCO filled
+- Compare page views per active org (GA4: `NEXT_PUBLIC_GA_MEASUREMENT_ID`)
+- Trial → Agency conversion
+

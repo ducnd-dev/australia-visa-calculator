@@ -355,3 +355,107 @@ alter default privileges in schema public
 alter default privileges in schema public
   grant usage, select on sequences to anon, authenticated, service_role;
 
+-- >>> 20260701000000_agency_profile.sql
+-- Agency professional profile (MARA, contact, custom disclaimer)
+alter table public.organizations
+  add column if not exists mara_number text,
+  add column if not exists registered_business_name text,
+  add column if not exists disclaimer_footer text,
+  add column if not exists phone text,
+  add column if not exists website text,
+  add column if not exists share_link_expiry_days int check (share_link_expiry_days is null or share_link_expiry_days between 1 and 365);
+
+-- Share link lifecycle on assessments
+alter table public.assessments
+  add column if not exists share_expires_at timestamptz,
+  add column if not exists share_revoked_at timestamptz;
+
+create index if not exists idx_assessments_share_revoked on public.assessments (share_revoked_at) where share_revoked_at is not null;
+
+-- >>> 20260801000000_team_invites.sql
+-- Team invites and org member visibility
+create table if not exists public.organization_invites (
+  id uuid primary key default gen_random_uuid(),
+  organization_id uuid not null references public.organizations (id) on delete cascade,
+  email text not null,
+  role text not null default 'agent' check (role in ('admin', 'agent')),
+  invited_by uuid references public.profiles (id) on delete set null,
+  token text unique not null,
+  expires_at timestamptz not null,
+  accepted_at timestamptz,
+  created_at timestamptz not null default now(),
+  unique (organization_id, email)
+);
+
+create index if not exists idx_org_invites_token on public.organization_invites (token);
+create index if not exists idx_org_invites_org on public.organization_invites (organization_id);
+
+alter table public.organization_invites enable row level security;
+
+-- Org members can read profiles in same workspace
+drop policy if exists "profiles_select_org" on public.profiles;
+create policy "profiles_select_org" on public.profiles
+  for select using (organization_id = public.user_organization_id());
+
+-- Admins manage invites for their org
+create policy "invites_select_admin" on public.organization_invites
+  for select using (
+    organization_id = public.user_organization_id()
+    and exists (
+      select 1 from public.profiles p
+      where p.id = auth.uid() and p.role = 'admin'
+    )
+  );
+
+create policy "invites_insert_admin" on public.organization_invites
+  for insert with check (
+    organization_id = public.user_organization_id()
+    and exists (
+      select 1 from public.profiles p
+      where p.id = auth.uid() and p.role = 'admin'
+    )
+  );
+
+create policy "invites_update_admin" on public.organization_invites
+  for update using (
+    organization_id = public.user_organization_id()
+    and exists (
+      select 1 from public.profiles p
+      where p.id = auth.uid() and p.role = 'admin'
+    )
+  );
+
+create policy "invites_delete_admin" on public.organization_invites
+  for delete using (
+    organization_id = public.user_organization_id()
+    and exists (
+      select 1 from public.profiles p
+      where p.id = auth.uid() and p.role = 'admin'
+    )
+  );
+
+-- >>> 20260802000000_client_crm.sql
+-- Client CRM: occupation and archive
+alter table public.clients
+  add column if not exists anzsco_code text,
+  add column if not exists anzsco_title text,
+  add column if not exists archived_at timestamptz;
+
+create index if not exists idx_clients_org_active on public.clients (organization_id, updated_at desc)
+  where archived_at is null;
+
+create index if not exists idx_clients_anzsco on public.clients (organization_id, anzsco_code)
+  where anzsco_code is not null;
+
+-- >>> 20260901000000_email_domain.sql
+-- Phase 7: optional custom Resend sending domain per org
+
+alter table public.organization_email_settings
+  add column if not exists from_domain text,
+  add column if not exists from_domain_verified boolean not null default false;
+
+comment on column public.organization_email_settings.from_domain is
+  'Custom domain for From address (e.g. agency.com.au). Requires DNS verification in Resend.';
+comment on column public.organization_email_settings.from_domain_verified is
+  'Set true after domain verified in Resend dashboard.';
+

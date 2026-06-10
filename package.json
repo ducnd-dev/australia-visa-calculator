@@ -13,6 +13,9 @@
     "db:check": "node scripts/check-supabase.mjs",
     "db:migrate": "node scripts/migrate-supabase.mjs",
     "db:build-apply-all": "node scripts/build-apply-all.mjs",
+    "beta:preflight": "node scripts/preflight-beta.mjs",
+    "beta:smoke": "node scripts/smoke-beta.mjs",
+    "beta:metrics": "node scripts/beta-metrics.mjs",
     "blog:validate": "node scripts/validate-blog.mjs",
     "content:validate": "node scripts/validate-content.mjs"
   },

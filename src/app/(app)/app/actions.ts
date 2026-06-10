@@ -8,6 +8,10 @@ import { calculatePoints } from "@/lib/visa-rules/gsm/calculate-points";
 import { calculatorAnswersSchema, type CalculatorAnswers } from "@/lib/visa-rules/gsm/calculator-schema";
 import { defaultTargetForVisa, suggestImprovements } from "@/lib/visa-rules/gsm/suggest-improvements";
 import { sendAssessmentReportEmail } from "@/lib/email/send-assessment-report";
+import { computeShareExpiresAt } from "@/lib/billing/share-link";
+import { acceptInvite } from "@/app/(app)/app/settings/team-actions";
+import { normalizeInviteEmail } from "@/lib/team/invites";
+import { requireProfile } from "@/lib/auth/session";
 
 export async function signUpAgency(formData: FormData): Promise<{ error: string } | void> {
   const email = String(formData.get("email") ?? "");
@@ -45,13 +49,45 @@ export async function signUpAgency(formData: FormData): Promise<{ error: string 
   redirect("/app");
 }
 
+export async function signUpWithInvite(formData: FormData): Promise<{ error: string } | void> {
+  const email = normalizeInviteEmail(String(formData.get("email") ?? ""));
+  const password = String(formData.get("password") ?? "");
+  const fullName = String(formData.get("fullName") ?? "");
+  const inviteToken = String(formData.get("inviteToken") ?? "");
+  if (!inviteToken) return { error: "Invitation token is required" };
+
+  const supabase = await createClient();
+  if (!supabase) return { error: "Supabase is not configured" };
+
+  const { data: authData, error: authError } = await supabase.auth.signUp({
+    email,
+    password,
+    options: { data: { full_name: fullName } },
+  });
+  if (authError) return { error: authError.message };
+  if (!authData.user) return { error: "Sign up failed" };
+
+  const accepted = await acceptInvite(inviteToken, authData.user.id);
+  if (accepted.error) return { error: accepted.error };
+
+  redirect("/app");
+}
+
 export async function signIn(formData: FormData): Promise<{ error: string } | void> {
   const email = String(formData.get("email") ?? "");
   const password = String(formData.get("password") ?? "");
+  const inviteToken = String(formData.get("inviteToken") ?? "").trim();
   const supabase = await createClient();
   if (!supabase) return { error: "Supabase is not configured" };
-  const { error } = await supabase.auth.signInWithPassword({ email, password });
+  const { data, error } = await supabase.auth.signInWithPassword({ email, password });
   if (error) return { error: error.message };
+  if (!data.user) return { error: "Sign in failed" };
+
+  if (inviteToken) {
+    const accepted = await acceptInvite(inviteToken, data.user.id);
+    if (accepted.error) return { error: accepted.error };
+  }
+
   redirect("/app");
 }
 
@@ -97,6 +133,8 @@ export async function updateClientRecord(clientId: string, formData: FormData): 
   const internalRef = String(formData.get("internalRef") ?? "").trim() || null;
   const notes = String(formData.get("notes") ?? "").trim() || null;
   const marketingConsent = formData.get("marketingConsent") === "on";
+  const anzscoCode = String(formData.get("anzscoCode") ?? "").trim() || null;
+  const anzscoTitle = String(formData.get("anzscoTitle") ?? "").trim() || null;
 
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
@@ -110,6 +148,8 @@ export async function updateClientRecord(clientId: string, formData: FormData): 
       email,
       internal_ref: internalRef,
       notes,
+      anzsco_code: anzscoCode,
+      anzsco_title: anzscoTitle,
       marketing_consent_at: marketingConsent ? new Date().toISOString() : null,
       updated_at: new Date().toISOString(),
     })
@@ -130,6 +170,8 @@ export async function createClientRecord(formData: FormData): Promise<void> {
   const internalRef = String(formData.get("internalRef") ?? "") || null;
   const notes = String(formData.get("notes") ?? "") || null;
   const marketingConsent = formData.get("marketingConsent") === "on";
+  const anzscoCode = String(formData.get("anzscoCode") ?? "").trim() || null;
+  const anzscoTitle = String(formData.get("anzscoTitle") ?? "").trim() || null;
 
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) redirect("/login");
@@ -142,12 +184,77 @@ export async function createClientRecord(formData: FormData): Promise<void> {
     email,
     internal_ref: internalRef,
     notes,
+    anzsco_code: anzscoCode,
+    anzsco_title: anzscoTitle,
     marketing_consent_at: marketingConsent ? new Date().toISOString() : null,
   }).select("id").single();
 
   if (error) redirect(`/app/clients/new?error=${encodeURIComponent(error.message)}`);
   revalidatePath("/app/clients");
   redirect(`/app/clients/${data.id}`);
+}
+
+export async function archiveClient(clientId: string): Promise<void> {
+  const supabase = await createClient();
+  if (!supabase) redirect(`/app/clients/${clientId}?error=Not+configured`);
+
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
+  const { data: profile } = await supabase.from("profiles").select("organization_id").eq("id", user.id).single();
+  if (!profile) redirect("/app/clients");
+
+  const { error } = await supabase
+    .from("clients")
+    .update({ archived_at: new Date().toISOString(), updated_at: new Date().toISOString() })
+    .eq("id", clientId)
+    .eq("organization_id", profile.organization_id);
+
+  if (error) redirect(`/app/clients/${clientId}?error=${encodeURIComponent(error.message)}`);
+  revalidatePath("/app/clients");
+  revalidatePath(`/app/clients/${clientId}`);
+  redirect(`/app/clients?view=archived&archived=1`);
+}
+
+export async function restoreClient(clientId: string): Promise<void> {
+  const supabase = await createClient();
+  if (!supabase) redirect(`/app/clients/${clientId}?error=Not+configured`);
+
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
+  const { data: profile } = await supabase.from("profiles").select("organization_id").eq("id", user.id).single();
+  if (!profile) redirect("/app/clients");
+
+  const { error } = await supabase
+    .from("clients")
+    .update({ archived_at: null, updated_at: new Date().toISOString() })
+    .eq("id", clientId)
+    .eq("organization_id", profile.organization_id);
+
+  if (error) redirect(`/app/clients/${clientId}?error=${encodeURIComponent(error.message)}`);
+  revalidatePath("/app/clients");
+  revalidatePath(`/app/clients/${clientId}`);
+  redirect(`/app/clients/${clientId}?restored=1`);
+}
+
+export async function deleteClient(clientId: string): Promise<void> {
+  const profile = await requireProfile();
+  if (!profile) redirect("/login");
+  if (profile.role !== "admin") {
+    redirect(`/app/clients/${clientId}/edit?error=${encodeURIComponent("Only admins can delete clients")}`);
+  }
+
+  const supabase = await createClient();
+  if (!supabase) redirect(`/app/clients/${clientId}?error=Not+configured`);
+
+  const { error } = await supabase
+    .from("clients")
+    .delete()
+    .eq("id", clientId)
+    .eq("organization_id", profile.organization_id);
+
+  if (error) redirect(`/app/clients/${clientId}/edit?error=${encodeURIComponent(error.message)}`);
+  revalidatePath("/app/clients");
+  redirect("/app/clients?deleted=1");
 }
 
 export async function saveAssessment(input: {
@@ -167,6 +274,16 @@ export async function saveAssessment(input: {
   const { data: profile } = await supabase.from("profiles").select("organization_id").eq("id", user.id).single();
   if (!profile) return { error: "Profile not found" };
 
+  const admin = createAdminClient();
+  const { data: org } = admin
+    ? await admin
+        .from("organizations")
+        .select("share_link_expiry_days")
+        .eq("id", profile.organization_id)
+        .single()
+    : { data: null };
+  const shareExpiresAt = computeShareExpiresAt(org?.share_link_expiry_days ?? null);
+
   const { data, error } = await supabase.from("assessments").insert({
     organization_id: profile.organization_id,
     client_id: input.clientId,
@@ -177,6 +294,7 @@ export async function saveAssessment(input: {
     total_points: result.total,
     agent_notes: input.agentNotes ?? null,
     suggestions_json: suggestions,
+    share_expires_at: shareExpiresAt,
   }).select("id, share_token").single();
 
   if (error) return { error: error.message };

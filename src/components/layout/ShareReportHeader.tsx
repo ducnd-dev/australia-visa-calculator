@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { FileText } from "lucide-react";
+import { formatMaraLine } from "@/lib/billing/agency-profile";
 import { cn } from "@/lib/utils";
 
 export function ShareReportHeader({
@@ -9,6 +10,11 @@ export function ShareReportHeader({
   branded,
   visaSubclass,
   lastUpdated,
+  maraNumber,
+  registeredBusinessName,
+  phone,
+  website,
+  disclaimerFooter,
   className,
 }: {
   orgName?: string | null;
@@ -17,8 +23,15 @@ export function ShareReportHeader({
   branded?: boolean;
   visaSubclass?: string;
   lastUpdated?: string;
+  maraNumber?: string | null;
+  registeredBusinessName?: string | null;
+  phone?: string | null;
+  website?: string | null;
+  disclaimerFooter?: string | null;
   className?: string;
 }) {
+  const displayName = registeredBusinessName || orgName;
+  const maraLine = formatMaraLine(maraNumber);
   return (
     <header
       className={cn(
@@ -27,12 +40,12 @@ export function ShareReportHeader({
         className
       )}
     >
-      {branded && orgName ? (
+      {branded && displayName ? (
         <div className="flex flex-wrap items-center gap-4">
           {logoUrl ? (
             <Image
               src={logoUrl}
-              alt={`${orgName} logo`}
+              alt={`${displayName} logo`}
               width={140}
               height={56}
               className="h-14 w-auto object-contain"
@@ -44,10 +57,22 @@ export function ShareReportHeader({
             </div>
           )}
           <div className="min-w-0">
-            <p className="font-semibold text-foreground">{orgName}</p>
+            <p className="font-semibold text-foreground">{displayName}</p>
+            {maraLine ? <p className="text-xs text-muted-foreground">{maraLine}</p> : null}
             <p className="text-sm text-muted-foreground">
               Prepared for {clientName ?? "Client"}
             </p>
+            {(phone || website) && (
+              <p className="mt-1 text-xs text-muted-foreground">
+                {phone}
+                {phone && website ? " · " : null}
+                {website ? (
+                  <a href={website} className="text-primary hover:underline" target="_blank" rel="noopener noreferrer">
+                    {website.replace(/^https?:\/\//i, "")}
+                  </a>
+                ) : null}
+              </p>
+            )}
           </div>
         </div>
       ) : (
@@ -70,6 +95,9 @@ export function ShareReportHeader({
           {lastUpdated ? `Rules ${lastUpdated}` : null}
         </p>
       )}
+      {disclaimerFooter ? (
+        <p className="mt-3 text-xs leading-relaxed text-muted-foreground">{disclaimerFooter}</p>
+      ) : null}
     </header>
   );
 }

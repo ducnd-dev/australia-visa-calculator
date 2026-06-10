@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { signIn, signUpAgency } from "@/app/(app)/app/actions";
+import { signIn, signUpAgency, signUpWithInvite } from "@/app/(app)/app/actions";
 import { FormFieldGroup, SimpleInputField } from "@/components/forms/simple-field";
 import { Field, FieldDescription, FieldLabel } from "@/components/ui/field";
 import { Button } from "@/components/ui/button";
@@ -10,8 +10,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { FieldError } from "@/components/ui/field";
 import { Separator } from "@/components/ui/separator";
 
-export function AuthForm() {
-  const [mode, setMode] = useState<"signin" | "signup">("signin");
+export function AuthForm({
+  invite,
+}: {
+  invite?: { token: string; email: string; orgName: string; role: string } | null;
+}) {
+  const isInvite = !!invite;
+  const [mode, setMode] = useState<"signin" | "signup">(isInvite ? "signup" : "signin");
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
@@ -20,7 +25,19 @@ export function AuthForm() {
     setPending(true);
     setError(null);
     const formData = new FormData(e.currentTarget);
-    const result = mode === "signin" ? await signIn(formData) : await signUpAgency(formData);
+    if (invite?.token) {
+      formData.set("inviteToken", invite.token);
+    }
+
+    let result: { error?: string } | void;
+    if (mode === "signin") {
+      result = await signIn(formData);
+    } else if (isInvite) {
+      result = await signUpWithInvite(formData);
+    } else {
+      result = await signUpAgency(formData);
+    }
+
     if (result?.error) setError(result.error);
     setPending(false);
   }
@@ -28,39 +45,82 @@ export function AuthForm() {
   return (
     <Card className="mx-auto max-w-md border-border/80 shadow-lg shadow-primary/5">
       <CardHeader className="space-y-1 border-b border-border/60 bg-muted/20 pb-6">
-        <CardTitle>{mode === "signin" ? "Agent sign in" : "Start agency trial"}</CardTitle>
-        <CardDescription>Migration agency dashboard</CardDescription>
+        <CardTitle>
+          {isInvite
+            ? `Join ${invite.orgName}`
+            : mode === "signin"
+              ? "Agent sign in"
+              : "Start agency trial"}
+        </CardTitle>
+        <CardDescription>
+          {isInvite
+            ? `You were invited as ${invite.role}. Sign in or create an account with ${invite.email}.`
+            : "Migration agency dashboard"}
+        </CardDescription>
       </CardHeader>
       <CardContent className="pt-6">
-        <div className="mb-5 flex gap-2 rounded-lg bg-muted/50 p-1">
-          <Button
-            type="button"
-            variant={mode === "signin" ? "default" : "ghost"}
-            size="sm"
-            className="flex-1"
-            onClick={() => setMode("signin")}
-          >
-            Sign in
-          </Button>
-          <Button
-            type="button"
-            variant={mode === "signup" ? "default" : "ghost"}
-            size="sm"
-            className="flex-1"
-            onClick={() => setMode("signup")}
-          >
-            Sign up
-          </Button>
-        </div>
+        {!isInvite && (
+          <div className="mb-5 flex gap-2 rounded-lg bg-muted/50 p-1">
+            <Button
+              type="button"
+              variant={mode === "signin" ? "default" : "ghost"}
+              size="sm"
+              className="flex-1"
+              onClick={() => setMode("signin")}
+            >
+              Sign in
+            </Button>
+            <Button
+              type="button"
+              variant={mode === "signup" ? "default" : "ghost"}
+              size="sm"
+              className="flex-1"
+              onClick={() => setMode("signup")}
+            >
+              Sign up
+            </Button>
+          </div>
+        )}
+        {isInvite && (
+          <div className="mb-5 flex gap-2 rounded-lg bg-muted/50 p-1">
+            <Button
+              type="button"
+              variant={mode === "signup" ? "default" : "ghost"}
+              size="sm"
+              className="flex-1"
+              onClick={() => setMode("signup")}
+            >
+              Create account
+            </Button>
+            <Button
+              type="button"
+              variant={mode === "signin" ? "default" : "ghost"}
+              size="sm"
+              className="flex-1"
+              onClick={() => setMode("signin")}
+            >
+              I have an account
+            </Button>
+          </div>
+        )}
         <form onSubmit={handleSubmit}>
           <FormFieldGroup>
-            {mode === "signup" && (
-              <>
-                <SimpleInputField id="orgName" name="orgName" label="Agency name" required />
-                <SimpleInputField id="fullName" name="fullName" label="Your name" required />
-              </>
+            {mode === "signup" && !isInvite && (
+              <SimpleInputField id="orgName" name="orgName" label="Agency name" required />
             )}
-            <SimpleInputField id="email" name="email" type="email" label="Email" required autoComplete="email" />
+            {(mode === "signup" || isInvite) && (
+              <SimpleInputField id="fullName" name="fullName" label="Your name" required={mode === "signup"} />
+            )}
+            <SimpleInputField
+              id="email"
+              name="email"
+              type="email"
+              label="Email"
+              required
+              autoComplete="email"
+              defaultValue={invite?.email}
+              readOnly={!!invite}
+            />
             <SimpleInputField
               id="password"
               name="password"
@@ -70,7 +130,7 @@ export function AuthForm() {
               minLength={6}
               autoComplete={mode === "signin" ? "current-password" : "new-password"}
             />
-            {mode === "signup" && (
+            {mode === "signup" && !isInvite && (
               <Field orientation="horizontal" className="items-start">
                 <input
                   type="checkbox"
@@ -84,7 +144,7 @@ export function AuthForm() {
                 </div>
               </Field>
             )}
-            {mode === "signin" && (
+            {mode === "signin" && !isInvite && (
               <p className="text-right text-sm">
                 <Link href="/login/reset" className="text-primary hover:underline">
                   Forgot password?
@@ -93,14 +153,26 @@ export function AuthForm() {
             )}
             {error ? <FieldError>{error}</FieldError> : null}
             <Button type="submit" className="w-full" disabled={pending}>
-              {pending ? "Please wait…" : mode === "signin" ? "Sign in" : "Create account"}
+              {pending
+                ? "Please wait…"
+                : isInvite
+                  ? mode === "signin"
+                    ? "Sign in and join"
+                    : "Create account and join"
+                  : mode === "signin"
+                    ? "Sign in"
+                    : "Create account"}
             </Button>
           </FormFieldGroup>
         </form>
-        <Separator className="my-6" />
-        <p className="text-center text-sm text-muted-foreground">
-          New here? Use Sign up to start a trial workspace.
-        </p>
+        {!isInvite && (
+          <>
+            <Separator className="my-6" />
+            <p className="text-center text-sm text-muted-foreground">
+              New here? Use Sign up to start a trial workspace.
+            </p>
+          </>
+        )}
       </CardContent>
     </Card>
   );

@@ -8,7 +8,8 @@ import { Button } from "@/components/ui/button";
 import { AssessmentActions } from "@/components/billing/AssessmentActions";
 import { createClient } from "@/lib/supabase/server";
 import { getSessionProfile } from "@/lib/auth/session";
-import { calculatePoints } from "@/lib/visa-rules/gsm/calculate-points";
+import { calculateAllPathways, calculatePoints } from "@/lib/visa-rules/gsm/calculate-points";
+import { SectionCard } from "@/components/layout/SectionCard";
 import { calculatorAnswersSchema } from "@/lib/visa-rules/gsm/calculator-schema";
 import { defaultTargetForVisa, suggestImprovements } from "@/lib/visa-rules/gsm/suggest-improvements";
 
@@ -20,7 +21,9 @@ export default async function AssessmentDetailPage({ params }: { params: Promise
 
   const { data: assessment } = await supabase
     .from("assessments")
-    .select("id, client_id, answers, share_token, visa_subclass, clients(display_name, email, unsubscribed_at)")
+    .select(
+      "id, client_id, answers, share_token, share_revoked_at, share_expires_at, visa_subclass, agent_notes, created_at, created_by, profiles:created_by(full_name), clients(display_name, email, unsubscribed_at, anzsco_code, anzsco_title)"
+    )
     .eq("id", id)
     .eq("organization_id", profile.organization_id)
     .single();
@@ -29,6 +32,7 @@ export default async function AssessmentDetailPage({ params }: { params: Promise
 
   const answers = calculatorAnswersSchema.parse(assessment.answers);
   const result = calculatePoints(answers);
+  const allPathways = calculateAllPathways(answers);
   const { gap, suggestions, targetPoints } = suggestImprovements(
     answers,
     result,
@@ -39,13 +43,27 @@ export default async function AssessmentDetailPage({ params }: { params: Promise
     display_name: string;
     email: string | null;
     unsubscribed_at: string | null;
+    anzsco_code: string | null;
+    anzsco_title: string | null;
   } | null;
+  const creator = assessment.profiles as unknown as { full_name: string | null } | null;
+  const occupation =
+    clientRow?.anzsco_code != null
+      ? `ANZSCO ${clientRow.anzsco_code}${clientRow.anzsco_title ? ` — ${clientRow.anzsco_title}` : ""}`
+      : null;
 
   return (
     <div className="max-w-3xl space-y-8">
       <AppPageHeader
         title="Assessment"
-        description={`${clientRow?.display_name ?? "Client"} · Subclass ${result.visaSubclass}`}
+        description={[
+          clientRow?.display_name ?? "Client",
+          `Subclass ${result.visaSubclass}`,
+          occupation,
+          creator?.full_name,
+        ]
+          .filter(Boolean)
+          .join(" · ")}
       >
         <AssessmentActions
           assessmentId={id}
@@ -54,11 +72,27 @@ export default async function AssessmentDetailPage({ params }: { params: Promise
           plan={profile.organizations?.plan}
           clientEmail={clientRow?.email ?? null}
           clientUnsubscribed={!!clientRow?.unsubscribed_at}
+          shareRevokedAt={assessment.share_revoked_at}
+          shareExpiresAt={assessment.share_expires_at}
         />
       </AppPageHeader>
 
       <div className="space-y-8">
-        <ResultsSummary result={result} suggestions={suggestions} gap={gap} />
+        {assessment.agent_notes ? (
+          <SectionCard title="Agent notes" description="Internal notes — not shown on client share link.">
+            <p className="whitespace-pre-wrap text-sm leading-relaxed text-muted-foreground">
+              {assessment.agent_notes}
+            </p>
+          </SectionCard>
+        ) : null}
+        <ResultsSummary
+          result={result}
+          allPathways={allPathways}
+          answers={answers}
+          suggestions={suggestions}
+          gap={gap}
+          variant="agency"
+        />
         <AiExplainPanel
           result={result}
           suggestions={suggestions}

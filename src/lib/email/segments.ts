@@ -50,7 +50,8 @@ export async function resolveSegment(
       .select("id, display_name, email, unsubscribed_at")
       .eq("organization_id", organizationId)
       .not("email", "is", null)
-      .is("unsubscribed_at", null);
+      .is("unsubscribed_at", null)
+      .is("archived_at", null);
 
     return (data ?? [])
       .filter((c) => c.email)
@@ -68,7 +69,8 @@ export async function resolveSegment(
       .eq("organization_id", organizationId)
       .not("email", "is", null)
       .not("marketing_consent_at", "is", null)
-      .is("unsubscribed_at", null);
+      .is("unsubscribed_at", null)
+      .is("archived_at", null);
 
     return (data ?? [])
       .filter((c) => c.email)
@@ -87,7 +89,8 @@ export async function resolveSegment(
       .eq("organization_id", organizationId)
       .not("email", "is", null)
       .not("marketing_consent_at", "is", null)
-      .is("unsubscribed_at", null);
+      .is("unsubscribed_at", null)
+      .is("archived_at", null);
 
     const recipients: SegmentRecipient[] = [];
     for (const client of clients ?? []) {

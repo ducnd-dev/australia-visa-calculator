@@ -158,6 +158,7 @@ export function AgencyCalculatorWizard({
                   suggestions={suggestionsData.suggestions}
                   gap={suggestionsData.gap}
                   answers={answers}
+                  variant="agency"
                 />
                 <AiExplainPanel
                   result={result}

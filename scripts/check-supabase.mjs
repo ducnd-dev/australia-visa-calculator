@@ -30,11 +30,18 @@ const EXPECTED_TABLES = [
   "profiles",
   "clients",
   "assessments",
+  "organization_invites",
   "organization_email_settings",
   "email_templates",
   "email_campaigns",
   "email_events",
   "ai_requests",
+];
+
+/** Phase 5+ columns — probed via REST select when service role available */
+const EXPECTED_COLUMNS = [
+  { table: "clients", columns: ["anzsco_code", "anzsco_title", "archived_at"] },
+  { table: "organization_email_settings", columns: ["from_domain", "from_domain_verified"] },
 ];
 
 loadEnvLocal();
@@ -44,6 +51,18 @@ const publishable =
   process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY?.trim() ||
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY?.trim();
 const serviceRole = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim();
+
+const BETA_ENV = [
+  { key: "NEXT_PUBLIC_SITE_URL", required: false, note: "production domain before deploy" },
+  { key: "NEXT_PUBLIC_SUPABASE_URL", required: true },
+  { key: "NEXT_PUBLIC_SUPABASE_ANON_KEY", alt: "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY", required: true },
+  { key: "SUPABASE_SERVICE_ROLE_KEY", required: true, note: "signup, share links, team invites" },
+  { key: "RESEND_API_KEY", required: true, note: "team invite + assessment emails" },
+  { key: "EMAIL_FROM_PLATFORM", required: false, note: "or EMAIL_FROM_DEFAULT_AGENCY" },
+  { key: "STRIPE_SECRET_KEY", required: false, note: "billing upgrade" },
+  { key: "STRIPE_WEBHOOK_SECRET", required: false, note: "subscription sync" },
+  { key: "R2_ACCOUNT_ID", required: false, note: "logo upload (Agency branding)" },
+];
 
 function keyStatus(val, label) {
   if (!val) return `MISSING (${label})`;
@@ -68,12 +87,12 @@ const TABLE_PROBE_COLUMN = {
   unsubscribe_tokens: "token",
 };
 
-async function restTableOk(table) {
+async function restTableOk(table, apiKey = publishable) {
   const col = TABLE_PROBE_COLUMN[table] ?? "id";
   const res = await fetch(`${url}/rest/v1/${table}?select=${col}&limit=1`, {
     headers: {
-      apikey: publishable,
-      Authorization: `Bearer ${publishable}`,
+      apikey: apiKey,
+      Authorization: `Bearer ${apiKey}`,
     },
   });
   if (res.status === 404) {
@@ -84,6 +103,26 @@ async function restTableOk(table) {
   }
   if (!res.ok) {
     const text = await res.text();
+    return { ok: false, message: `${res.status} ${text.slice(0, 120)}` };
+  }
+  return { ok: true };
+}
+
+async function restColumnsOk(table, columns) {
+  const select = columns.join(",");
+  const key = serviceRole ?? publishable;
+  const res = await fetch(`${url}/rest/v1/${table}?select=${select}&limit=0`, {
+    headers: {
+      apikey: key,
+      Authorization: `Bearer ${key}`,
+      Prefer: "count=exact",
+    },
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    if (text.includes("column") || res.status === 400) {
+      return { ok: false, message: `missing column(s): ${text.slice(0, 160)}` };
+    }
     return { ok: false, message: `${res.status} ${text.slice(0, 120)}` };
   }
   return { ok: true };
@@ -115,6 +154,27 @@ for (const table of allTables) {
   }
 }
 
+console.log("\n=== Phase 5+ columns ===");
+for (const { table, columns } of EXPECTED_COLUMNS) {
+  const probe = await restColumnsOk(table, columns);
+  if (probe.ok) {
+    console.log(`  ✓ ${table} (${columns.join(", ")})`);
+  } else {
+    console.log(`  ❌ ${table}: ${probe.message}`);
+    console.log("     → Run migrations 20260802000000_client_crm.sql and 20260901000000_email_domain.sql");
+  }
+}
+
+console.log("\n=== Beta env checklist ===");
+for (const item of BETA_ENV) {
+  const val =
+    process.env[item.key]?.trim() ||
+    (item.alt ? process.env[item.alt]?.trim() : undefined);
+  const status = val ? "✓" : item.required ? "❌" : "○";
+  const note = item.note ? ` — ${item.note}` : "";
+  console.log(`  ${status} ${item.key}${note}`);
+}
+
 console.log("\n=== Migrations to apply (in order) ===");
 const migrations = [
   "20260101000000_initial_schema.sql",
@@ -123,6 +183,10 @@ const migrations = [
   "20260401000000_email_marketing.sql",
   "20260501000000_ai.sql",
   "20260601000000_data_api_grants.sql",
+  "20260701000000_agency_profile.sql",
+  "20260801000000_team_invites.sql",
+  "20260802000000_client_crm.sql",
+  "20260901000000_email_domain.sql",
 ];
 for (const m of migrations) console.log(" ", m);
 

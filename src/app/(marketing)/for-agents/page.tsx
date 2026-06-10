@@ -44,7 +44,9 @@ export default function ForAgentsPage() {
       <h2>Why agents use this tool</h2>
       <ul>
         <li>Deterministic Schedule 6D engine with citation-style breakdown lines</li>
-        <li>Client workspace: profiles, internal reference, notes, assessment history</li>
+        <li>Client workspace: profiles, ANZSCO occupation, search and archive, assessment history</li>
+        <li>Team workspace: invite agents, shared clients, role-based access (admin vs agent)</li>
+        <li>Compare two saved assessments to show point progress to clients</li>
         <li>Pathway and improvement suggestions based on rule simulations — not AI math</li>
         <li>Share links for clients; branded logo on share pages with Agency plan</li>
         <li>Transactional assessment emails plus optional marketing campaigns (with consent)</li>

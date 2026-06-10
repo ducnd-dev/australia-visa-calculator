@@ -13,6 +13,12 @@ export async function saveEmailSettings(formData: FormData): Promise<void> {
 
   const fromName = String(formData.get("fromName") ?? "").trim();
   const replyTo = String(formData.get("replyTo") ?? "").trim();
+  const fromDomain = String(formData.get("fromDomain") ?? "")
+    .trim()
+    .toLowerCase()
+    .replace(/^https?:\/\//, "")
+    .replace(/\/.*$/, "");
+  const fromDomainVerified = formData.get("fromDomainVerified") === "on";
   if (!fromName) {
     redirect(`/app/settings?error=${encodeURIComponent("From name is required")}`);
   }
@@ -24,6 +30,8 @@ export async function saveEmailSettings(formData: FormData): Promise<void> {
     organization_id: profile.organization_id,
     from_name: fromName,
     reply_to: replyTo,
+    from_domain: fromDomain || null,
+    from_domain_verified: fromDomain ? fromDomainVerified : false,
     updated_at: new Date().toISOString(),
   });
 

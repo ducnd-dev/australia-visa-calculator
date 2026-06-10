@@ -8,7 +8,15 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { UserProfile } from "@/lib/auth/session";
 import { cn } from "@/lib/utils";
-import { ClipboardPlus, LayoutDashboard, LogOut, Settings, Users } from "lucide-react";
+import {
+  ClipboardPlus,
+  CreditCard,
+  LayoutDashboard,
+  LogOut,
+  Mail,
+  Settings,
+  Users,
+} from "lucide-react";
 
 const mobileNav: {
   href: string;
@@ -19,6 +27,8 @@ const mobileNav: {
   { href: "/app", label: "Home", icon: LayoutDashboard, exact: true },
   { href: "/app/clients", label: "Clients", icon: Users },
   { href: "/app/assessments/new", label: "Assess", icon: ClipboardPlus },
+  { href: "/app/marketing", label: "Marketing", icon: Mail },
+  { href: "/app/billing", label: "Billing", icon: CreditCard },
   { href: "/app/settings", label: "Settings", icon: Settings },
 ];
 

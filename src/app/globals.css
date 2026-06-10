@@ -170,6 +170,20 @@ body {
   .print-assessment .shadow-sm {
     box-shadow: none !important;
   }
+
+  .print-assessment .border,
+  .print-assessment .border-border {
+    border-color: #e2e8f0 !important;
+  }
+
+  .print-assessment table {
+    page-break-inside: avoid;
+  }
+
+  .print-assessment h2,
+  .print-assessment .text-lg {
+    font-size: 14pt;
+  }
 }
 
 .dark {

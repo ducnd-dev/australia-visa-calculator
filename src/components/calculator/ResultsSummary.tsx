@@ -33,6 +33,8 @@ export function ResultsSummary({
   gap,
   shareUrl,
   answers,
+  variant = "public",
+  showAds = true,
 }: {
   result: PointsResult;
   allPathways?: AllPathwayScores;
@@ -40,7 +42,12 @@ export function ResultsSummary({
   gap: number;
   shareUrl?: string;
   answers?: CalculatorAnswers;
+  /** Agency app: hide ads and public calculator CTAs */
+  variant?: "public" | "agency";
+  /** When false, hide ads even on public variant (paid org) */
+  showAds?: boolean;
 }) {
+  const isAgency = variant === "agency";
   return (
     <div className="space-y-6">
       <div className="relative overflow-hidden rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/10 via-card to-card p-6 shadow-sm">
@@ -141,18 +148,20 @@ export function ResultsSummary({
         updated {LAST_UPDATED}.
       </div>
 
-      <AdSlot slot="results-below-summary" format="rectangle" />
+      {!isAgency && showAds && <AdSlot slot="results-below-summary" format="rectangle" />}
 
-      <div className="flex flex-wrap gap-3">
-        {shareUrl && (
-          <Button type="button" onClick={() => navigator.clipboard.writeText(shareUrl)}>
-            Copy share link
+      {!isAgency && (
+        <div className="flex flex-wrap gap-3">
+          {shareUrl && (
+            <Button type="button" onClick={() => navigator.clipboard.writeText(shareUrl)}>
+              Copy share link
+            </Button>
+          )}
+          <Button variant="outline" asChild>
+            <Link href="/calculator">Start over</Link>
           </Button>
-        )}
-        <Button variant="outline" asChild>
-          <Link href="/calculator">Start over</Link>
-        </Button>
-      </div>
+        </div>
+      )}
     </div>
   );
 }

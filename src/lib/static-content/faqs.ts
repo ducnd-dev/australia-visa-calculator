@@ -56,11 +56,26 @@ export const SITE_FAQS: FaqItem[] = [
   {
     question: "Are share links private?",
     answer:
-      "Anyone with a share link can view that assessment summary. Links are unlisted (not indexed for search) but not password-protected. Do not share links publicly if the results are sensitive. Agency-branded share pages show your logo only on the paid Agency plan.",
+      "Anyone with a share link can view that assessment summary while the link is active. Links are unlisted (not indexed for search) but not password-protected. Agencies can revoke links, generate new ones, and optionally set an expiry period in Settings. Do not share links publicly if the results are sensitive. Agency-branded share pages show your logo only on the paid Agency plan.",
   },
   {
     question: "How often are the rules updated?",
     answer: `We publish a rules version and last-reviewed date (${LAST_UPDATED}). Legislation and policy can change without notice — confirm the current Schedule 6D and invitation criteria before lodging.`,
+  },
+  {
+    question: "Can multiple agents share one agency workspace?",
+    answer:
+      "Yes. Workspace admins can invite team members from Settings → Team. Agents sign in with their own accounts and share the same clients and assessments. Admins manage billing, branding, and email settings; agents run assessments and manage client files.",
+  },
+  {
+    question: "How do I archive a client?",
+    answer:
+      "Open the client → Edit → Archive client. Archived clients are hidden from the active list and excluded from marketing segments, but saved assessments are kept. Restore anytime from the same screen or find them under Clients → Archived.",
+  },
+  {
+    question: "Can I compare two assessments for the same client?",
+    answer:
+      "Yes. On the client detail page, select two assessments in the compare picker to see point deltas, changed answers, and breakdown differences — useful when English scores or employment history change between runs.",
   },
 ];
 

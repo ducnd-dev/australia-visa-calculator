@@ -9,6 +9,11 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { createClient } from "@/lib/supabase/server";
 import { getSessionProfile } from "@/lib/auth/session";
 import { planLabel } from "@/lib/billing/plans";
+import { countAiRequestsThisMonth } from "@/lib/ai/limits";
+import { countMarketingSendsThisMonth } from "@/lib/email/send-marketing";
+import { monthlyAiLimit } from "@/lib/ai/limits";
+import { monthlyMarketingLimit } from "@/lib/email/plan-limits";
+import { Mail, Sparkles as SparklesIcon } from "lucide-react";
 
 export default async function DashboardPage() {
   const profile = await getSessionProfile();
@@ -22,6 +27,7 @@ export default async function DashboardPage() {
     created_at: string;
     client_id: string;
     clients: { display_name: string } | null;
+    creator_name: string | null;
   }[] = [];
 
   if (supabase && profile) {
@@ -38,7 +44,9 @@ export default async function DashboardPage() {
 
     const { data: recent } = await supabase
       .from("assessments")
-      .select("id, total_points, visa_subclass, created_at, client_id, clients(display_name)")
+      .select(
+        "id, total_points, visa_subclass, created_at, client_id, clients(display_name), profiles:created_by(full_name)"
+      )
       .eq("organization_id", profile.organization_id)
       .order("created_at", { ascending: false })
       .limit(5);
@@ -50,6 +58,7 @@ export default async function DashboardPage() {
           : Array.isArray(client)
             ? (client[0] as { display_name: string } | undefined) ?? null
             : (client as { display_name: string });
+      const creator = row.profiles as unknown as { full_name: string | null } | null;
       return {
         id: row.id as string,
         total_points: row.total_points as number,
@@ -57,13 +66,20 @@ export default async function DashboardPage() {
         created_at: row.created_at as string,
         client_id: row.client_id as string,
         clients: resolved,
+        creator_name: creator?.full_name ?? null,
       };
     });
   }
 
-  const plan = planLabel(profile?.organizations?.plan);
+  const orgPlan = profile?.organizations?.plan ?? "trial";
+  const plan = planLabel(orgPlan);
   const orgName = profile?.organizations?.name ?? "Workspace";
   const isEmpty = clientCount === 0;
+
+  const aiUsed = profile ? await countAiRequestsThisMonth(profile.organization_id) : 0;
+  const aiLimit = monthlyAiLimit(orgPlan);
+  const marketingUsed = profile ? await countMarketingSendsThisMonth(profile.organization_id) : 0;
+  const marketingLimit = monthlyMarketingLimit(orgPlan);
 
   return (
     <div className="space-y-8">
@@ -95,6 +111,18 @@ export default async function DashboardPage() {
           hint="PDF & branding on Agency plan"
           icon={Sparkles}
           className="sm:col-span-2 lg:col-span-1"
+        />
+        <StatCard
+          label="AI explanations"
+          value={`${aiUsed}/${aiLimit}`}
+          hint="Used this month"
+          icon={SparklesIcon}
+        />
+        <StatCard
+          label="Marketing sends"
+          value={`${marketingUsed}/${marketingLimit}`}
+          hint="Used this month"
+          icon={Mail}
         />
       </div>
 
@@ -144,6 +172,7 @@ export default async function DashboardPage() {
                         </p>
                         <p className="text-xs text-muted-foreground">
                           Subclass {a.visa_subclass} · {new Date(a.created_at).toLocaleDateString()}
+                          {a.creator_name ? ` · ${a.creator_name}` : ""}
                         </p>
                       </div>
                       <span className="shrink-0 text-lg font-semibold tabular-nums text-primary">

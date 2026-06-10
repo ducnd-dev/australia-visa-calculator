@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { FlashMessage } from "@/components/ui/flash-message";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { getSessionProfile } from "@/lib/auth/session";
+import { agencyPriceDisplay } from "@/lib/billing/display-price";
 import { planLabel, isAgencyPlan } from "@/lib/billing/plans";
 import { openBillingPortal, startCheckout } from "./actions";
 
@@ -32,13 +33,24 @@ export default async function BillingPage({
   const plan = profile?.organizations?.plan ?? "trial";
   const isPaid = isAgencyPlan(plan);
   const isAdmin = profile?.role === "admin";
+  const agencyPrice = agencyPriceDisplay();
 
   return (
     <div className="max-w-2xl space-y-8">
       <AppPageHeader
         title="Billing"
-        description="Manage your Agency subscription, PDF export, and branded share links."
+        description={
+          isAdmin
+            ? "Manage your Agency subscription, PDF export, and branded share links."
+            : "View your workspace plan. Contact your admin to upgrade or change billing."
+        }
       />
+
+      {!isAdmin && (
+        <FlashMessage variant="warning">
+          You are signed in as an agent. Only workspace admins can upgrade or manage subscriptions.
+        </FlashMessage>
+      )}
 
       {params.subscribed === "1" && (
         <FlashMessage variant="success">
@@ -75,7 +87,9 @@ export default async function BillingPage({
           <ul className="list-inside list-disc space-y-1.5">
             <li>Unlimited clients and assessments (trial)</li>
             <li>Generic share links</li>
-            <li>Upgrade for PDF + branding</li>
+            <li>
+              Upgrade to Agency ({agencyPrice}) for PDF export and branded share links
+            </li>
           </ul>
         )}
 
@@ -85,7 +99,7 @@ export default async function BillingPage({
               <form action={startCheckout}>
                 <Button type="submit" className="gap-2">
                   <CreditCard className="size-4" aria-hidden />
-                  Upgrade to Agency
+                  Upgrade to Agency — {agencyPrice}
                 </Button>
               </form>
             ) : (
@@ -105,6 +119,20 @@ export default async function BillingPage({
         ) : (
           <p className="text-muted-foreground">Contact your workspace admin to change billing.</p>
         )}
+      </SectionCard>
+
+      <SectionCard
+        title="Enterprise"
+        description="Multi-seat teams, custom domains, CSV export, and dedicated support."
+        contentClassName="space-y-3 text-sm text-muted-foreground"
+      >
+        <p>
+          Need more than the Agency plan — multiple offices, SSO, or volume pricing? Contact us for
+          Enterprise onboarding.
+        </p>
+        <Button variant="outline" asChild>
+          <Link href="/contact?subject=enterprise">Contact sales</Link>
+        </Button>
       </SectionCard>
 
       <p className="text-xs text-muted-foreground">
