@@ -180,8 +180,8 @@ as $$
       7
     from active_clients c
     where c.anzsco_code is null
-  ) items
-  order by sort_key, client_name
+  ) items(item_type, priority, client_id, client_name, assessment_id, message, sort_key)
+  order by items.sort_key, items.client_name
   limit p_limit;
 $$;
 

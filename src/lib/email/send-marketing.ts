@@ -4,7 +4,7 @@ import { isWithinMarketingLimit, monthlyMarketingLimit } from "@/lib/email/plan-
 import { renderTemplate } from "@/lib/email/render-template";
 import { parseSegmentFilter, resolveSegment } from "@/lib/email/segments";
 import { getOrCreateClientUnsubscribeToken, getOrCreateProfileUnsubscribeToken, unsubscribeUrl } from "@/lib/email/unsubscribe";
-import { getSiteUrl } from "@/lib/stripe/client";
+import { getSiteUrl } from "@/lib/site-url";
 
 const DISCLAIMER =
   "You received this because your migration agent has your consent to send updates. This is not migration advice.";

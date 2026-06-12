@@ -63,6 +63,11 @@ export const SITE_FAQS: FaqItem[] = [
     answer: `We publish a rules version and last-reviewed date (${LAST_UPDATED}). Legislation and policy can change without notice — confirm the current Schedule 6D and invitation criteria before lodging.`,
   },
   {
+    question: "How do I pay for the Professional plan?",
+    answer:
+      "Workspace admins open Billing in the app, connect a Web3 wallet, and send USDC on the Base network. Each payment extends Professional access for 30 days (PDF export, branded share links, higher email and AI limits). There is no auto-renewal — pay again before your expiry date.",
+  },
+  {
     question: "Can multiple agents share one practice workspace?",
     answer:
       "Yes. Workspace admins can invite team members from Settings → Team. Agents sign in with their own accounts and share the same clients and assessments. Admins manage billing, branding, and email settings; agents run assessments and manage client files.",

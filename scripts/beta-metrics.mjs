@@ -112,7 +112,7 @@ try {
   console.log(`  Agents:               ${agents}`);
 
   console.log("\n--- Weekly review ---");
-  console.log("1. Trial → Agency: check Stripe dashboard + organizations.plan");
+  console.log("1. Trial → Agency: check crypto_payments + organizations.plan / billing_expires_at");
   console.log("2. Compare usage: GA4 pageviews /app/clients/*/compare");
   console.log("3. Phase 8 adoption: password share %, verified email domains (above)");
   console.log("4. Time-to-find client: qualitative from agency feedback calls");

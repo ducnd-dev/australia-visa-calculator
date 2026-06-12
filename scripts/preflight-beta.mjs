@@ -12,7 +12,7 @@ const isLocalhost =
   !siteUrl || siteUrl.includes("localhost") || siteUrl.includes("127.0.0.1");
 
 const REQUIRED = [
-  { key: "NEXT_PUBLIC_SITE_URL", note: "invite links, Stripe return, share URLs" },
+  { key: "NEXT_PUBLIC_SITE_URL", note: "invite links, billing return, share URLs" },
   { key: "NEXT_PUBLIC_SUPABASE_URL" },
   {
     key: "NEXT_PUBLIC_SUPABASE_ANON_KEY",
@@ -28,9 +28,11 @@ const RECOMMENDED = [
     alt: "EMAIL_FROM_DEFAULT_AGENCY",
     note: "verified domain in production",
   },
-  { key: "STRIPE_SECRET_KEY", note: "billing upgrade" },
-  { key: "STRIPE_WEBHOOK_SECRET", note: "subscription sync" },
-  { key: "STRIPE_PRICE_ID_AGENCY_MONTHLY" },
+  { key: "BASE_RPC_URL", note: "on-chain payment verification" },
+  { key: "BILLING_TREASURY_WALLET", note: "USDC recipient" },
+  { key: "NEXT_PUBLIC_BILLING_TREASURY_WALLET", note: "client-side transfer target" },
+  { key: "NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID", note: "wallet connect UI" },
+  { key: "CRON_SECRET", note: "expire-billing cron" },
   { key: "OPENAI_API_KEY", note: "AI explain demo" },
 ];
 
@@ -84,8 +86,8 @@ console.log(`\nR2 branding: ${r2Set}/${OPTIONAL_BRANDING.length} vars set`);
 
 if (siteUrl && !isLocalhost) {
   console.log("\nWebhook endpoints (configure in dashboards):");
-  console.log(`  Stripe:  ${siteUrl}/api/stripe/webhook`);
   console.log(`  Resend:  ${siteUrl}/api/email/webhooks/resend`);
+  console.log(`  Cron:    ${siteUrl}/api/cron/expire-billing (Bearer CRON_SECRET)`);
   console.log("\nSmoke test after deploy:");
   console.log(`  npm run beta:smoke`);
 }

@@ -26,7 +26,7 @@ const checks = [
     path: "/api/assessments/00000000-0000-0000-0000-000000000000/pdf",
     expectStatus: [401, 307, 302, 403, 404],
   },
-  { name: "Stripe webhook (POST only)", path: "/api/stripe/webhook", method: "GET", expectStatus: [405, 400, 401] },
+  { name: "Billing confirm (POST only)", path: "/api/billing/confirm", method: "GET", expectStatus: [405, 401] },
 ];
 
 let failed = 0;

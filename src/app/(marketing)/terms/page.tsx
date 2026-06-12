@@ -57,10 +57,10 @@ export default function TermsPage() {
 
       <h2>Paid plans</h2>
       <p>
-        Professional plan subscriptions bill through Stripe on a recurring basis until cancelled in the billing
-        portal. Fees are shown at checkout. Refunds are at our discretion except where required by
-        Australian Consumer Law. Feature limits (email volume, AI usage) apply per plan as described
-        on <Link href="/pricing">pricing</Link>.
+        Professional plan access is prepaid with USDC on Base. Each payment extends access for the
+        period shown on <Link href="/pricing">pricing</Link>. On-chain payments are final. Refunds are
+        at our discretion except where required by Australian Consumer Law. Feature limits (email
+        volume, AI usage) apply per plan as described on pricing.
       </p>
 
       <h2>Intellectual property</h2>

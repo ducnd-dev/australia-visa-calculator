@@ -91,7 +91,7 @@ async function main() {
         slug: `${slug}-${userId.slice(0, 8)}`,
         plan: "agency",
         show_ads: false,
-        stripe_subscription_status: "active",
+        billing_expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
         ai_enabled: true,
         preferred_model: "gpt-4o-mini",
       })
@@ -116,7 +116,7 @@ async function main() {
       .update({
         plan: "agency",
         show_ads: false,
-        stripe_subscription_status: "active",
+        billing_expires_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
         ai_enabled: true,
       })
       .eq("id", orgId);
@@ -144,7 +144,10 @@ async function main() {
   console.log(`App:      ${siteUrl}/app`);
   console.log(`Platform admin: ${siteUrl}/admin/marketing`);
   console.log("\nRole: super_admin · Plan: agency (Professional) — PDF, branding, billing, marketing");
+  console.log("\nOptional demo data (clients, assessments, attention queue):");
+  console.log(`  ADMIN_EMAIL=${email} npm run seed:demo`);
 }
+
 
 main().catch((err) => {
   console.error("❌", err.message ?? err);

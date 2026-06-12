@@ -1,7 +1,9 @@
 import Link from "next/link";
-import { CreditCard, Sparkles } from "lucide-react";
+import { Sparkles, Wallet } from "lucide-react";
 import { AppPageHeader } from "@/components/layout/AppPageHeader";
 import { SectionCard } from "@/components/layout/SectionCard";
+import { CryptoCheckout } from "@/components/billing/CryptoCheckout";
+import { Web3Provider } from "@/components/billing/Web3Provider";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { FlashMessage } from "@/components/ui/flash-message";
@@ -9,25 +11,41 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { getSessionProfile } from "@/lib/auth/session";
 import { agencyPriceDisplay } from "@/lib/billing/display-price";
 import { planLabel, isAgencyPlan } from "@/lib/billing/plans";
-import { openBillingPortal, startCheckout } from "./actions";
 
 export default async function BillingPage({
   searchParams,
 }: {
-  searchParams: Promise<{ subscribed?: string; canceled?: string; error?: string }>;
+  searchParams: Promise<{ paid?: string; error?: string }>;
 }) {
   const profile = await getSessionProfile();
   const params = await searchParams;
   const admin = createAdminClient();
 
-  let subscriptionStatus: string | null = null;
+  let billingExpiresAt: string | null = null;
+  let billingWallet: string | null = null;
+  let paymentHistory: {
+    tx_hash: string;
+    amount_units: string;
+    payer_wallet: string;
+    confirmed_at: string;
+  }[] = [];
+
   if (admin && profile) {
-    const { data } = await admin
+    const { data: org } = await admin
       .from("organizations")
-      .select("plan, stripe_subscription_status, stripe_customer_id")
+      .select("plan, billing_expires_at, billing_wallet")
       .eq("id", profile.organization_id)
       .single();
-    subscriptionStatus = data?.stripe_subscription_status ?? null;
+    billingExpiresAt = org?.billing_expires_at ?? null;
+    billingWallet = org?.billing_wallet ?? null;
+
+    const { data: payments } = await admin
+      .from("crypto_payments")
+      .select("tx_hash, amount_units, payer_wallet, confirmed_at")
+      .eq("organization_id", profile.organization_id)
+      .order("confirmed_at", { ascending: false })
+      .limit(5);
+    paymentHistory = payments ?? [];
   }
 
   const plan = profile?.organizations?.plan ?? "trial";
@@ -41,31 +59,23 @@ export default async function BillingPage({
         title="Billing"
         description={
           isAdmin
-            ? "Manage your Professional plan subscription, PDF export, and branded share links."
-            : "View your workspace plan. Contact your admin to upgrade or change billing."
+            ? "Pay with USDC on Base to unlock PDF export, branding, and higher limits."
+            : "View your workspace plan. Contact your admin to upgrade or extend billing."
         }
       />
 
       {!isAdmin && (
         <FlashMessage variant="warning">
-          You are signed in as an agent. Only workspace admins can upgrade or manage subscriptions.
+          You are signed in as an agent. Only workspace admins can pay or extend billing.
         </FlashMessage>
       )}
 
-      {params.subscribed === "1" && (
+      {params.paid === "1" && (
         <FlashMessage variant="success">
-          Subscription active. PDF export and branded share links are now enabled.
+          Payment confirmed. Professional features are now active.
         </FlashMessage>
       )}
       {params.error && <FlashMessage variant="error">{decodeURIComponent(params.error)}</FlashMessage>}
-      {params.canceled === "1" && (
-        <FlashMessage variant="warning">Checkout canceled. You can upgrade anytime.</FlashMessage>
-      )}
-      {subscriptionStatus === "past_due" && (
-        <FlashMessage variant="error">
-          Payment failed. Update your payment method in the billing portal.
-        </FlashMessage>
-      )}
 
       <SectionCard
         title="Current plan"
@@ -93,23 +103,17 @@ export default async function BillingPage({
           </ul>
         )}
 
+        {billingWallet && (
+          <p className="text-xs">
+            Last payment wallet: <code className="text-foreground">{billingWallet}</code>
+          </p>
+        )}
+
         {isAdmin ? (
-          <div className="flex flex-wrap gap-3 pt-2">
-            {!isPaid ? (
-              <form action={startCheckout}>
-                <Button type="submit" className="gap-2">
-                  <CreditCard className="size-4" aria-hidden />
-                  Upgrade to Professional — {agencyPrice}
-                </Button>
-              </form>
-            ) : (
-              <form action={openBillingPortal}>
-                <Button type="submit" variant="outline" className="gap-2">
-                  <CreditCard className="size-4" aria-hidden />
-                  Manage subscription
-                </Button>
-              </form>
-            )}
+          <div className="space-y-4 pt-2">
+            <Web3Provider>
+              <CryptoCheckout priceLabel={agencyPrice} billingExpiresAt={billingExpiresAt} />
+            </Web3Provider>
             {isPaid && (
               <Button variant="ghost" asChild>
                 <Link href="/app/settings">Logo & settings</Link>
@@ -120,6 +124,26 @@ export default async function BillingPage({
           <p className="text-muted-foreground">Contact your workspace admin to change billing.</p>
         )}
       </SectionCard>
+
+      {paymentHistory.length > 0 && (
+        <SectionCard
+          title="Recent payments"
+          description="On-chain USDC payments for this workspace."
+          contentClassName="space-y-3 text-sm"
+        >
+          <ul className="space-y-2">
+            {paymentHistory.map((p) => (
+              <li key={p.tx_hash} className="rounded-md border border-border/60 px-3 py-2 text-muted-foreground">
+                <div className="font-mono text-xs text-foreground break-all">{p.tx_hash}</div>
+                <div className="mt-1 text-xs">
+                  {(Number(p.amount_units) / 1_000_000).toFixed(2)} USDC ·{" "}
+                  <time dateTime={p.confirmed_at}>{new Date(p.confirmed_at).toLocaleString()}</time>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </SectionCard>
+      )}
 
       <SectionCard
         title="Enterprise"
@@ -135,8 +159,9 @@ export default async function BillingPage({
         </Button>
       </SectionCard>
 
-      <p className="text-xs text-muted-foreground">
-        Payments are processed by Stripe. This tool does not provide migration advice.
+      <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
+        <Wallet className="size-3.5" aria-hidden />
+        Payments settle on Base in USDC. This tool does not provide migration advice.
       </p>
     </div>
   );

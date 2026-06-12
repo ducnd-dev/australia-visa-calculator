@@ -2,5 +2,6 @@
 export function agencyPriceDisplay(): string {
   const fromEnv = process.env.NEXT_PUBLIC_AGENCY_PRICE_DISPLAY?.trim();
   if (fromEnv) return fromEnv;
-  return "$49 AUD/month";
+  const amount = process.env.NEXT_PUBLIC_BILLING_USDC_AMOUNT ?? "32";
+  return `${amount} USDC`;
 }

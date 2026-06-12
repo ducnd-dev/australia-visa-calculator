@@ -8,7 +8,7 @@ import {
   assessmentReportHtml,
   assessmentReportSubject,
 } from "@/lib/email/templates/assessment-report";
-import { getSiteUrl } from "@/lib/stripe/client";
+import { getSiteUrl } from "@/lib/site-url";
 import { calculateAllPathways } from "@/lib/visa-rules/gsm/calculate-points";
 import { calculatorAnswersSchema } from "@/lib/visa-rules/gsm/calculator-schema";
 

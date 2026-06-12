@@ -94,7 +94,7 @@ export default function PricingPage() {
             <CardDescription>Migration agents</CardDescription>
             <CardTitle className="text-2xl">Professional</CardTitle>
             <p className="text-3xl font-bold tracking-tight text-foreground">{agencyPrice}</p>
-            <p className="text-sm text-muted-foreground">Billed monthly via Stripe · cancel anytime</p>
+            <p className="text-sm text-muted-foreground">Prepaid USDC on Base · 30 days per payment</p>
           </CardHeader>
           <CardContent className="relative space-y-6">
             <div className="relative aspect-video overflow-hidden rounded-lg border border-primary/20 bg-muted/30">
@@ -117,11 +117,11 @@ export default function PricingPage() {
 
       <h2>Billing</h2>
       <p>
-        Professional plan subscriptions are processed by Stripe. Workspace admins can upgrade from{" "}
-        <strong>Billing</strong> after sign-in and manage payment methods in the Stripe customer
-        portal. Prices are shown at checkout in your local currency where supported. Cancel anytime;
-        access to paid features ends at the end of the billing period unless otherwise required by
-        law.
+        Professional plan access is prepaid with USDC on the Base network. Workspace admins connect a
+        wallet from <strong>Billing</strong> after sign-in and send USDC to activate or extend access
+        for 30 days per payment. There is no auto-renewal — pay again before expiry to keep PDF export
+        and branding. On-chain transactions are final; refunds are at our discretion except where
+        required by law.
       </p>
 
       <p>

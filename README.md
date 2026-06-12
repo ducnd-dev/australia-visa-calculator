@@ -56,7 +56,7 @@ Requires `profiles.role = 'super_admin'` in Supabase.
 | Marketing sends | — | Limited | Higher limits |
 | PDF export & practice logo on share | — | — | Yes |
 
-Upgrade from **Billing** after sign-in. Stripe handles subscriptions.
+Upgrade from **Billing** after sign-in. Pay with USDC on Base (prepaid 30 days per payment).
 
 ---
 
@@ -65,7 +65,7 @@ Upgrade from **Billing** after sign-in. Stripe handles subscriptions.
 - **Next.js 16** (App Router), React 19, TypeScript, Tailwind CSS, shadcn/ui
 - **Points engine** — deterministic Schedule 6D rules in `src/lib/visa-rules/gsm/` (not AI)
 - **Supabase** — auth, Postgres, RLS
-- **Stripe** — subscriptions
+- **USDC on Base** — prepaid Professional billing (wagmi + viem)
 - **Resend** — transactional email & campaigns
 - **OpenAI** — optional AI explain / draft notes (points never recalculated by AI)
 - **Cloudflare R2** — optional practice logo storage
@@ -96,13 +96,22 @@ Open [http://localhost:3000](http://localhost:3000).
 | `SUPABASE_SERVICE_ROLE_KEY` | Sign-up org creation, share links, admin scripts |
 | `DATABASE_URL` | `npm run db:migrate` only (not required on Vercel runtime) |
 
-Optional: `RESEND_API_KEY`, `STRIPE_*`, `OPENAI_API_KEY`, R2 vars — enable email, billing, AI, logos respectively.
+Optional: `RESEND_API_KEY`, `BASE_RPC_URL`, `BILLING_TREASURY_WALLET`, `OPENAI_API_KEY`, R2 vars — enable email, billing, AI, logos respectively.
 
-### Create admin user (local / staging)
+### Create admin user + demo data (local / staging)
 
 ```bash
+# 1. Admin account (Professional plan, super_admin)
 ADMIN_EMAIL=admin@example.com ADMIN_PASSWORD='YourSecurePass1!' npm run seed:admin
+
+# 2. Realistic practice data (8 clients, assessments, emails, attention scenarios)
+ADMIN_EMAIL=admin@example.com npm run seed:demo
+
+# Replace demo data
+ADMIN_EMAIL=admin@example.com npm run seed:demo -- --reset
 ```
+
+Demo clients use `internal_ref` prefix `DEMO-*` — safe to reset without touching real data.
 
 ---
 
@@ -118,6 +127,7 @@ ADMIN_EMAIL=admin@example.com ADMIN_PASSWORD='YourSecurePass1!' npm run seed:adm
 | `npm run db:migrate` | Apply Supabase migrations |
 | `npm run db:check` | Verify tables & env checklist |
 | `npm run seed:admin` | Seed super_admin + Professional org |
+| `npm run seed:demo` | Demo clients, assessments, emails (`ADMIN_EMAIL`, `--reset`) |
 | `npm run blog:validate` | Validate blog frontmatter |
 | `npm run push:vercel-env` | Push `.env.local` → Vercel Production |
 | `npm run go-live` | Launch status + next-step hints |
@@ -136,11 +146,13 @@ Full deploy runbook: [docs/DEPLOY.md](docs/DEPLOY.md)
 2. `npm run db:migrate` (or run SQL files in `supabase/migrations/` in order).
 3. Set URL + keys in `.env.local`.
 
-### Stripe (Professional plan)
+### Crypto billing (Professional plan)
 
-1. Create **Agency** product + monthly price → `STRIPE_PRICE_ID_AGENCY_MONTHLY`.
-2. Webhook: `POST /api/stripe/webhook` — `checkout.session.completed`, `customer.subscription.updated`, `customer.subscription.deleted`, `invoice.payment_failed`.
-3. Local: `stripe listen --forward-to localhost:3000/api/stripe/webhook`
+1. Set treasury wallet (`BILLING_TREASURY_WALLET` + `NEXT_PUBLIC_BILLING_TREASURY_WALLET`).
+2. Base RPC (`BASE_RPC_URL`) for on-chain verification at `POST /api/billing/confirm`.
+3. WalletConnect project ID for RainbowKit (`NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID`).
+4. Daily cron: `GET /api/cron/expire-billing` (Bearer `CRON_SECRET`).
+5. Local testnet guide: [docs/BILLING-CRYPTO-TESTNET.md](docs/BILLING-CRYPTO-TESTNET.md)
 
 ### Resend (email)
 
@@ -173,7 +185,7 @@ src/
     (marketing)/     # Public site: home, calculator, blog, pricing
     (app)/app/       # Practice workspace
     (admin)/admin/   # Platform admin
-    api/             # Stripe, Resend, AI, PDF, cron
+    api/             # billing, Resend, AI, PDF, cron
     share/           # Client-facing shared assessments
   components/        # UI, calculator wizard, CRM, marketing
   lib/

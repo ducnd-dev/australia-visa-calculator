@@ -1,6 +1,6 @@
 import { randomBytes } from "crypto";
 import { createAdminClient } from "@/lib/supabase/admin";
-import { getSiteUrl } from "@/lib/stripe/client";
+import { getSiteUrl } from "@/lib/site-url";
 
 export async function getOrCreateClientUnsubscribeToken(clientId: string): Promise<string> {
   const admin = createAdminClient();

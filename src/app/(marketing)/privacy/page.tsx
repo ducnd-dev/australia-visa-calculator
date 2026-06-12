@@ -38,7 +38,10 @@ export default function PrivacyPage() {
       <ul>
         <li>Account email, name, and organisation details</li>
         <li>Client profiles you create: display name, email, notes, marketing consent, assessments</li>
-        <li>Subscription and billing metadata via our payment provider (we do not store full card numbers)</li>
+        <li>
+          Billing metadata: wallet addresses used for USDC payments, transaction hashes, and plan expiry
+          dates (we do not store private keys)
+        </li>
         <li>Email delivery logs when you send assessment reports or campaigns</li>
         <li>AI usage metadata when you generate explanations (assessment context, not intended for unrelated profiling)</li>
       </ul>

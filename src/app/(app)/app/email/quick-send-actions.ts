@@ -7,7 +7,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { getResend } from "@/lib/email/resend";
 import { renderTemplate } from "@/lib/email/render-template";
 import { resolveDisclaimerFooter } from "@/lib/billing/agency-profile";
-import { getSiteUrl } from "@/lib/stripe/client";
+import { getSiteUrl } from "@/lib/site-url";
 
 export async function sendQuickTemplateEmail(formData: FormData): Promise<void> {
   const profile = await requireProfile();

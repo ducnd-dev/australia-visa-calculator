@@ -45,8 +45,8 @@ const BETA_ENV = [
   { key: "SUPABASE_SERVICE_ROLE_KEY", required: true, note: "signup, share links, team invites" },
   { key: "RESEND_API_KEY", required: true, note: "team invite + assessment emails" },
   { key: "EMAIL_FROM_PLATFORM", required: false, note: "or EMAIL_FROM_DEFAULT_AGENCY" },
-  { key: "STRIPE_SECRET_KEY", required: false, note: "billing upgrade" },
-  { key: "STRIPE_WEBHOOK_SECRET", required: false, note: "subscription sync" },
+  { key: "BASE_RPC_URL", required: false, note: "crypto billing verify" },
+  { key: "BILLING_TREASURY_WALLET", required: false, note: "USDC treasury" },
   { key: "R2_ACCOUNT_ID", required: false, note: "logo upload (Agency branding)" },
 ];
 
@@ -130,7 +130,7 @@ if (orgProbe.ok) {
   );
 }
 
-const EXTRA_TABLES = ["stripe_webhook_events", "email_sends", "unsubscribe_tokens"];
+const EXTRA_TABLES = ["crypto_payments", "email_sends", "unsubscribe_tokens"];
 const allTables = [...EXPECTED_TABLES, ...EXTRA_TABLES];
 
 console.log("\n=== Tables (REST / Data API) ===");
@@ -174,6 +174,7 @@ console.log("\n=== Migrations to apply (in order) ===");
 const migrations = [
   "20260101000000_initial_schema.sql",
   "20260201000000_stripe_billing.sql",
+  "20261201000000_crypto_billing.sql",
   "20260301000000_email.sql",
   "20260401000000_email_marketing.sql",
   "20260501000000_ai.sql",

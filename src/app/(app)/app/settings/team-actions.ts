@@ -6,7 +6,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 import { getResend } from "@/lib/email/resend";
 import { teamInviteHtml, teamInviteSubject } from "@/lib/email/templates/team-invite";
 import { requireProfile } from "@/lib/auth/session";
-import { getSiteUrl } from "@/lib/stripe/client";
+import { getSiteUrl } from "@/lib/site-url";
 import { findAuthUserByEmail } from "@/lib/team/find-auth-user-by-email";
 import {
   generateInviteToken,
