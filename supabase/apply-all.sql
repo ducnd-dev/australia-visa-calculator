@@ -671,15 +671,15 @@ grant execute on function public.get_attention_items(uuid, int) to service_role;
 -- >>> 20261201000000_crypto_billing.sql
 -- Crypto billing (USDC on Base): prepaid Professional plan
 
+alter table public.organizations
+  add column if not exists billing_expires_at timestamptz,
+  add column if not exists billing_wallet text;
+
 -- Migrate active Stripe subscribers before dropping Stripe columns
 update public.organizations
 set billing_expires_at = now() + interval '30 days'
 where stripe_subscription_status in ('active', 'trialing')
   and billing_expires_at is null;
-
-alter table public.organizations
-  add column if not exists billing_expires_at timestamptz,
-  add column if not exists billing_wallet text;
 
 create table if not exists public.crypto_payments (
   id uuid primary key default gen_random_uuid(),
